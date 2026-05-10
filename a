@@ -1,0 +1,28 @@
+set -e
+
+if [ -z "${no_prep}" ]; then
+	${CC} -g -c ${cdefines} universe.cpp -Wno-write-strings
+	if [ ! -f "./share/shared.o" ]; then
+		cd ./share
+		./sh
+		cd ..
+	fi
+	${CC} universe.o share/shared.o ${L} -lactionswf ${L2} -lz -Wl,--allow-multiple-definition #de la shared e multiple
+	cd ../swf_backup
+	#ca shared vrea ../img
+	if [ -z "${no_prep_run}" ]; then
+		${launcher} ../list/a.out
+	fi
+else
+	cd ../swf_backup
+fi
+if [ -z "${no_alt}" ]; then
+	rm -f ../list/t${site}mp/*
+	no_number_check=x scripts=../list/t${site}mp ~/s/actionswf-1/oaalternative.sh ./${site}universe/universe.swf ${launcher}' ../list/a.out 0x10002 x'
+	rm ./${site}universe/universe.swf.log
+fi
+if [ -z "${no_string}" ]; then
+	${launcher} ../list/a.out x && \
+	cd ${site}universe && ../../dd universe
+	rm universe.swf.x
+fi

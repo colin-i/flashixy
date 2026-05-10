@@ -1,0 +1,114 @@
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+
+  import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    getFirestore,
+    limit,
+    orderBy,
+    query,
+    where
+  } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+<!-- -->
+
+<!-- -->
+
+  async function load_scores () {
+    const testQ = query(
+      collection(db, "Test"),
+      orderBy("score", "asc"),
+      limit(10)
+    );
+
+    const orphanQ = query(
+      collection(db, "orphanScores"),
+      where("game", "==", "Test"),
+      orderBy("score", "asc"),
+      limit(10)
+    );
+
+    const [testSnap, orphanSnap] = await Promise.all([
+      getDocs(testQ),
+      getDocs(orphanQ)
+    ]);
+
+    const allScores = [];
+
+    testSnap.forEach(doc => {
+      allScores.push({
+        id: doc.id,
+        score: doc.data().score,
+        type: 0   // Test collection
+      });
+    });
+
+    orphanSnap.forEach(doc => {
+      allScores.push({
+        score: doc.data().score,
+        type: 1   // orphanScores collection
+      });
+    });
+
+    allScores.sort((a, b) => a.score - b.score);
+    const top10 = allScores.slice(0, 10);
+
+    // game title
+    gameDiv.innerHTML = `<h2>Test</h2>`;
+
+    // create table
+    const table = document.createElement("table");
+
+    table.style.borderCollapse = "collapse";
+    table.style.width = "100%";
+    table.style.maxWidth = "500px";
+
+    table.innerHTML = `
+      <tr>
+        <th style="border:1px solid #999;padding:6px;">Place</th>
+        <th style="border:1px solid #999;padding:6px;">Name</th>
+        <th style="border:1px solid #999;padding:6px;">Score</th>
+      </tr>
+    `;
+
+    let place = 1;
+
+    for (const entry of top10) {
+      let name;
+      if (entry.type == 0) {
+        const nameRef = doc(db, "names", entry.id);
+        const nameSnap = await getDoc(nameRef);
+
+        if (nameSnap.exists()) {
+          name = nameSnap.data().name;
+        } else name = "Anonymous";
+      } else name = "(deleted account)";
+
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td style="border:1px solid #999;padding:6px;text-align:center;">
+          ${place}
+        </td>
+
+        <td style="border:1px solid #999;padding:6px;">
+          ${name}
+        </td>
+
+        <td style="border:1px solid #999;padding:6px;text-align:right;">
+          ${entry.score}
+        </td>
+      `;
+
+      table.appendChild(row);
+
+      place++;
+    }
+
+    gameDiv.appendChild(table);
+  }
+  load_scores()//this is async to make html-minifier-terser only with --minify-js true(not '{"module":true}') but async is a good thing
+</script>

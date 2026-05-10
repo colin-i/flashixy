@@ -1,0 +1,10 @@
+
+. ~/games/ffdec
+if [ -z "${src}" ]; then src=/home/bc/x86_64_lib; fi
+if [ -z "${launcher}" ]; then launcher=qq; fi
+CC=x86_64-linux-gnu-g++ L=-L${src} L2=-L/home/bc/x86_64_lib/cross \
+ffdec=${ffd} \
+extern_ffdec=${effd} \
+launcher=${launcher} LD_LIBRARY_PATH=${src}:/home/bc/x86_64_lib/cross \
+	./a${nr} $@
+#nr ca mai trece si ep/simplu pe aici si are cu nr

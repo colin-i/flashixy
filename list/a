@@ -1,0 +1,17 @@
+set -e
+
+if [ -z "${no_prep}" ]; then
+	${CC} -g -c list.cpp -Wno-write-strings ${cdefines}
+	${CC} list.o ${L} -lactionswf ${L2} -lz
+	${launcher} ./a.out
+fi
+if [ -z "${no_alt}" ]; then
+	rm -f t${site}mp/*
+	no_number_check=x scripts=t${site}mp ~/s/actionswf-1/oaalternative.sh ../../swf_backup/${site}universe/list.swf "${launcher}"' ./a.out 0x10002 x'
+	rm ../../swf_backup/${site}universe/list.swf.log
+fi
+if [ -z "${no_string}" ]; then
+	${launcher} ./a.out x
+	cd ../../swf_backup/${site}universe && ../../dd list.swf
+	rm list.swf.x
+fi

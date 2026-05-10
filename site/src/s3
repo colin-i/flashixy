@@ -1,0 +1,3 @@
+  //2 3
+  const gameDiv = document.getElementById("game");
+  gameDiv.style.color = "white";

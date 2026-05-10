@@ -1,0 +1,2 @@
+if [ ! -e ~/numai_flags ]; then export src=~/s/actionswf-1/src; fi
+cdefines='-Dlocal_build' ./ar

@@ -1,0 +1,1 @@
+src=~/s/actionswf-1/src cdefines='-Dlocal_build' ./ar

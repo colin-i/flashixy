@@ -1,0 +1,5 @@
+ln -sf "$(pwd)/index.html" ../swf_backup/euniverse/index.html
+ln -sf "$(pwd)/member.html" ../swf_backup/euniverse/member.html
+ln -sf "$(pwd)/scores.html" ../swf_backup/euniverse/scores.html
+cd ..
+ln -sf "$(pwd)/index.html" ./swf_backup/universe/index.html

@@ -1,0 +1,4 @@
+  //1 2
+  let ins = false;
+  let nameRef;
+  const auth = getAuth(app);

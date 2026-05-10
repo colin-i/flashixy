@@ -1,0 +1,46 @@
+
+#first row is the source path
+/home/bc/games/list/site/src/
+
+#the destination path row(the main folder)
+./
+
+#third and fourth rows are optional
+#
+#
+
+index.html
+	a0
+		blank
+	b1
+	b2
+	b3
+		s1
+		s2
+		a3
+			blank
+#this is a ln
+x
+	a0
+		c0
+	blank
+	c2
+	a3
+		c3
+#ln
+member.html
+	blank
+	b1
+	b2
+	d3
+		s1
+		s2
+		s3
+#ln
+scores.html
+	blank
+	b1
+	b2
+	e3
+		s1
+		s3

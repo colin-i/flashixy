@@ -1,0 +1,26 @@
+
+   .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+   }
+
+   .topbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    box-sizing: border-box;
+   }
+
+   .topbar a {
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+    font-family: Arial, sans-serif;
+   }
+
+   .topbar a:hover {
+    text-decoration: underline;
+   }

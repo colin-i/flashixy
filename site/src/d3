@@ -1,0 +1,239 @@
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+
+  import {
+    GoogleAuthProvider,
+    createUserWithEmailAndPassword,
+    deleteUser,
+    getAuth,
+    onAuthStateChanged,
+    sendEmailVerification,
+    sendPasswordResetEmail,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+
+  import {
+    collection,
+    doc,
+    getDoc,
+    getFirestore,
+    runTransaction,
+    setDoc,
+    writeBatch
+  } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+<!-- -->
+
+<!-- -->
+
+<!-- -->
+
+  window.changeName = async function () {
+    const span = document.getElementById("nameError");
+    span.textContent = "";
+    let name = document.getElementById("name").value.trim();
+    try {
+      const oldName = await get_name();
+      const newNameRef = doc(db, "usernames", name);
+      const newNameSnap = await getDoc(newNameRef);
+      if (newNameSnap.exists()) {
+        throw new Error("Name already taken");
+      }
+      await runTransaction(db, async (transaction) => {//must be in transaction to avoid multiple users same call
+        // reserve new username
+        transaction.set(newNameRef, {//transaction.create is not a function, must update/set
+          uid: auth.currentUser.uid
+        });
+        // update user profile
+        transaction.set(nameRef, {
+          name: name
+        });
+        // delete old username reservation
+        if (oldName) {
+          const oldNameRef = doc(db, "usernames", oldName);
+          transaction.delete(oldNameRef);
+        }
+      });
+      document.getElementById("account").textContent = name;
+    } catch (e) {
+      span.textContent = e.message;
+    }
+  };
+
+  async function get_name () {
+    const nameSnap = await getDoc(nameRef);
+    if (nameSnap.exists()) return nameSnap.data().name;
+    return "";
+  }
+
+  async function login() {
+    gameDiv.innerHTML = `
+      <button id="googleLogin">Google</button>
+      <button id="emailLogin">Email/Password</button>
+    `;
+
+    document.getElementById("googleLogin").onclick = async () => {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+    }
+
+    document.getElementById("emailLogin").onclick = () => {
+      gameDiv.innerHTML = `
+        <input id="email" type="email" placeholder="Email">
+        <input id="password" type="password" placeholder="Password">
+        <button id="loginBtn">Login</button>
+        <button id="registerBtn">Register</button>
+        <button id="forgotBtn">Forgot Password</button>
+      `;
+      document.getElementById("loginBtn").onclick = async () => {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        gameDiv.textContent = "Logging in...";
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+        } catch (e) {
+          gameDiv.textContent = e.message;
+        }
+      }
+      document.getElementById("registerBtn").onclick = async () => {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        gameDiv.textContent = "Signing in...";
+        try {
+          const cred = await createUserWithEmailAndPassword(auth, email, password);
+          await sendEmailVerification(cred.user);
+        } catch (e) {
+          gameDiv.textContent = e.message;
+        }
+      }
+      document.getElementById("forgotBtn").onclick = async () => {
+        const email = document.getElementById("email").value;
+        if (!email) {
+          return;
+        }
+        try {
+          await sendPasswordResetEmail(auth, email);
+          gameDiv.textContent = "Password reset email sent!";
+        } catch (e) {
+          gameDiv.textContent = e.message;
+        }
+      };
+    }
+  }
+
+  window.resetPassword = async function () {
+    try {
+      await sendPasswordResetEmail(auth, auth.currentUser.email);
+      alert("Password reset email sent.");
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+  window.logOut = function () {
+    gameDiv.textContent="Logged out";
+    signOut(auth);
+  }
+  window.deleteAccount = async function () {
+    const ans = prompt("Type 'yes' to permanently delete account:");
+    if (ans != "yes") return;
+    try {
+      // delete rest of the entries. get current username
+      const name = await get_name();
+      if (name) {
+        const batch = writeBatch(db);
+        // delete username reservation
+        const usernameRef = doc(db, "usernames", name);
+        batch.delete(usernameRef);
+        // delete profile document
+        batch.delete(nameRef);
+        // commit all operations atomically
+        await batch.commit();
+        document.getElementById("account").textContent = "";//more at deleteUser
+      }
+      // cannot play by keeping deleted uids, they can be regenerated
+      const oldRef = doc(db, "Test", auth.currentUser.uid);
+      const oldSnap = await getDoc(oldRef);
+      if (oldSnap.exists()) {
+        const batch = writeBatch(db);
+        const orphanRef = doc(collection(db, "orphanScores"));
+        batch.set(orphanRef, {
+            game: "Test",
+            score: oldSnap.data().score
+        });
+        batch.delete(oldRef);
+        await batch.commit();
+      }
+      // delete auth account
+      //    this is last because there is a Rule that the user must be authenticated
+      await deleteUser(auth.currentUser);//not in batch because Auth and Firestore are separate systems.
+      //    it has a chance to fail if the login is not recent (same session)
+      //    this is at limit, only the owner can delete it's own name/scores, but then it can fail to delete the main account...
+      // print message
+      gameDiv.textContent = "Account deleted";
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+
+  async function bestScore(game,uid) {
+    const scoreRef = doc(db, game, uid);
+    const scoreSnap = await getDoc(scoreRef);
+    if (!scoreSnap.exists()) {
+      return "";
+    }
+    return `
+      <tr>
+        <td style="border:1px solid #999;padding:6px;">
+          ${game}
+        </td>
+        <td style="border:1px solid #999;padding:6px;text-align:right;">
+          ${scoreSnap.data().score}
+        </td>
+      </tr>
+    `;
+  }
+
+  onAuthStateChanged(auth, async (user) => {//this will fire at least once
+    if (!user) {
+      if (!ins) {
+        await login();
+      }
+    } else {
+      const isPasswordUser = user.providerData[0].providerId == "password";
+      if (isPasswordUser && !user.emailVerified) {//emailVerified is always true at Google
+        alert("Please verify your email before using the app.");
+        await signOut(auth);
+        return;
+      }
+      nameRef = doc(db, "names", user.uid);
+      gameDiv.innerHTML = `
+        <div id="account"></div>
+        <input id="name" type="text" placeholder="2-20 chars"><button onclick="changeName()">Change Name</button><span id="nameError"></span>
+        ${isPasswordUser ? `<br><button onclick="resetPassword()">Reset Password</button>` : ""}
+        <br><button onClick="logOut()">Log Out</button>
+        <br><button onClick="deleteAccount()">Delete Account</button>
+      `;
+      document.getElementById("account").textContent = await get_name();
+
+      let rows = "";
+      rows += await bestScore("Test", auth.currentUser.uid);
+      if (rows) {
+        const table = document.createElement("table");
+        table.style.borderCollapse = "collapse";
+        table.style.width = "300px";
+        table.innerHTML = `
+          <tr>
+            <th style="border:1px solid #999;padding:6px;"><u>Game</u></th>
+            <th style="border:1px solid #999;padding:6px;"><u>Score</u></th>
+          </tr>
+          ${rows}
+        `;
+        gameDiv.appendChild(table);
+      }
+
+      ins = true;
+    }
+  });
+</script>

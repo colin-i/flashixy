@@ -1,0 +1,2 @@
+
+${CC} -g ${cdefines} -Wno-write-strings -c -o shared.o shared.cpp

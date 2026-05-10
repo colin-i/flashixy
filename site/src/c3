@@ -1,0 +1,7 @@
+kongregateAPI.loadAPI(function () {
+    window.kongregate = kongregateAPI.getAPI();
+    kongregate.services.connect();
+});
+window.submitScore = function(name, score) {
+    kongregate.stats.submit(name, score);
+};
