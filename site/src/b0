@@ -1,0 +1,25 @@
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Flashixy - Play Flash Games Online</title>
+  <meta name="description" content="Play Flash games instantly in your browser on Flashixy. Powered by the Ruffle emulator for smooth, modern gameplay with no downloads." />
+  <meta name="author" content="Flashixy" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Keywords (light use, mostly optional nowadays) -->
+  <meta name="keywords" content="flash games, online games, browser games, ruffle emulator, play games online" />
+
+  <!-- Open Graph (social sharing) -->
+  <meta property="og:title" content="Flashixy - Play Flash Games in Your Browser" />
+  <meta property="og:description" content="Play Flash games instantly in your browser with smooth Ruffle-powered gameplay - no downloads required." />
+  <meta property="og:url" content="https://flashixy.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://flashixy.com/og-image.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Flashixy - Play Flash Games in Your Browser" />
+  <meta name="twitter:description" content="Play Flash games instantly in your browser with Ruffle-powered performance." />
+  <meta name="twitter:image" content="https://flashixy.com/og-image.png" />
+
+  <!-- Icons -->
+  <link rel="icon" href="/favicon.ico" />
