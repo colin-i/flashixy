@@ -1278,7 +1278,7 @@ int main(int argc,char**argv){
         rating_stars.onEnterFrame=function(){
 			//dupa, pentru stele peste text pentru onPress
             this.onEnterFrame=null;
-            
+
 			function light_stars(n){
                 for(i=1;i<=n;i++){rating_stars["star"+i].gotoAndStop(2);}
                 for(i=n+1;i<=5;i++){rating_stars["star"+i].gotoAndStop(1);}
@@ -1357,7 +1357,7 @@ veche    int star_wait=swf_shape_bitmap(star_wait_dbl,star_sz[0],star_sz[1]);
 		}
 		*/
 
-/*            
+/*
 			var statista='%s';
 			var loader=new LoadVars();
 			loader.onData=function(data){
