@@ -1,10 +1,14 @@
 qq ~/o/wstbld files.txt
 a () {
-	b=$(date +%s)$1
-	html-minifier-terser $1 --collapse-whitespace --remove-comments --minify-js true --minify-css true -o $b
-	cat $b | wc -l
-	mv $b ../$1
-	rm $1
+	if [ -z "${no_min}" ]; then
+		b=$(date +%s)$1
+		html-minifier-terser $1 --collapse-whitespace --remove-comments --minify-js true --minify-css true -o $b
+		cat $b | wc -l
+		mv $b ../$1
+		rm $1
+	else
+		mv $1 ..
+	fi
 }
 a index.html
 a member.html

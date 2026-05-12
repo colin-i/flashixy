@@ -299,7 +299,7 @@ int static_text_submit(int bound_width,EditText ed,char*initialtext){
 	int text_id=swf_text(bound_width,hg,"",(HasFont|HasText|HasTextColor|NoSelect|ReadOnly),&ed);
 	return text_id;
 }
-void submitform(int deffont,char*nume,char*returner,char*la_load_extra=""){
+void submitform(int deffont,char*nume,char*returner,char*la_load_extra,bool is_flashixy=false){
 	int submit_width=540;
 	int submit_height=380;
 
@@ -401,8 +401,8 @@ void submitform(int deffont,char*nume,char*returner,char*la_load_extra=""){
 //			kongregate.stats.submit(name_text,s);
 //			kongregate.stats.submit(name_text+' History',s)
 			flash.external.ExternalInterface.call('submitScore',name_text,s);
-			flash.external.ExternalInterface.call('submitScore',name_text+' History',s);
 		)");
+		if(!is_flashixy)action_sprite(submitsprite,"flash.external.ExternalInterface.call('submitScore',name_text+' History',s)");
 		//g1="";
 		//nume=g1;//g2=g1;stats="_root.strip_underscores(game_name)";
 	}

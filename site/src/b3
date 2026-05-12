@@ -14,7 +14,9 @@
   import {
     doc,
     getFirestore,
-    setDoc
+    increment,
+    setDoc,
+    updateDoc
   } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
 <!-- -->
@@ -22,13 +24,18 @@
 <!-- -->
 
   window.submitScore = async function(name, score) {
+    const ref = doc(db, "plays", "plays");
+    await updateDoc( ref,
+      {
+        Test: increment(1)
+      }
+    ); //setDoc will repleace all document if not with ,{ merge : true }
     if (ins) {
         await setDoc(nameRef, {
           score: score
         });
     }
   };
-
   onAuthStateChanged(auth, async (user) => {//this will fire at least once
     if (user) {
       nameRef = doc(db, "Test", user.uid);
