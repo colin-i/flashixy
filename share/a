@@ -15,5 +15,5 @@ a="${a// /,}"
 echo $a
 
 read
-echo -n plays_index = new Array"($str);" > ../../swf_backup/euniverse/plays.txt
-#echo -n plays = new Array"($a);" >> ../../swf_backup/euniverse/plays.txt
+echo -n "$str" > ../../swf_backup/euniverse/plays.txt
+#echo -n ";$a" >> ../../swf_backup/euniverse/plays.txt
