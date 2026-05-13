@@ -15,5 +15,5 @@ const player = ruffle.createPlayer();
 player.style.width = "100%";
 player.style.height = "100%";
 document.getElementById("game").appendChild(player);
-player.load("universe.swf");
+<!-- -->
 </script>

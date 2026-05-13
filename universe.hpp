@@ -88,9 +88,8 @@ typedef struct episooade_struct
 //unsigned int id2;//prin anul 2106 unsigned maximum
 }episoade_pack;
 
-#define Universe_ep "Universe"
-ep_keys Universe_keys[]={{NULL}};
-episoade_pack Universe={Universe_ep,"Multiple games.",Universe_keys,NULL,"universe",kongregate};
+ep_keys Universe_keys[]={{NULL}};//straight {{NULL}} will not work
+episoade_pack Universe={"Universe","Multiple games.",Universe_keys,NULL,"universe",kongregate};
 //
 #define Ores_for_Ship_ep "Ores_for_Ship"
 ep_keys Ores_for_Ship_keys[]={{&left_arrow,"Movement","Left Direction"},{&right_arrow,"Movement","Right Direction"},{&up_arrow,"Movement","Up Direction"},{&down_arrow,"Movement","Down Direction"},{NULL}};
@@ -234,7 +233,7 @@ void init_episode(){
 #define sorts_stable_length 3
 //#define rat "Rating"
 //#define pop "Plays"
-char*stable_sort[sorts_stable_length]={"Chronology","Newness","Location"};
+char*stable_sort[sorts_stable_length]={"Chronology","Newness","Plays"};
 //da null asa, oare de ce: char* pop = sorts[1]; char* rat = sorts[2];
 //The compiler will automatically concatenate adjacent strings
 //#define rat_user rat "_user"
@@ -243,8 +242,8 @@ char*stable_sort[sorts_stable_length]={"Chronology","Newness","Location"};
 #define sorts_length 2
 char* sorts[sorts_length]={stable_sort[1],stable_sort[0]}; // 4 "Location","Plays" // e la limita Chronology in web unde e mai mare decat in desktop
 
-#define sorts2_length 2 //sorts_stable_length
-char* sorts2[sorts2_length]={stable_sort[0],stable_sort[1]};//stable_sort[2],
+#define sorts2_length sorts_stable_length
+char* sorts2[sorts2_length]={stable_sort[2],stable_sort[0],stable_sort[1]};
 
 //la automatics
 void din_buf_in_buf(char* s, ...) {

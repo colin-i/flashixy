@@ -1,0 +1,10 @@
+async function data_read() {
+	let response = await fetch("plays.txt");
+	let txt = await response.text();
+	eval(txt);
+	window.sorts_play=function(){
+		return plays_index;
+	}
+	<!-- -->
+}
+data_read();

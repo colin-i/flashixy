@@ -5,10 +5,9 @@
 #the destination path row(the main folder)
 ./
 
-#third and fourth rows are optional
-#
-#
+#third and fourth rows are optional for src/dest extra copies
 
+#b
 index.html
 	a0
 		b0
@@ -18,8 +17,10 @@ index.html
 		s1
 		s2
 		a3
+			b3_2
+				c3_2
 			blank
-#this is a ln
+#c this is a ln
 x
 	a0
 		c0
@@ -27,7 +28,8 @@ x
 	c2
 	a3
 		c3
-#ln
+		c3_2
+#d ln
 member.html
 	b0
 	b1
@@ -36,7 +38,7 @@ member.html
 		s1
 		s2
 		s3
-#ln
+#e ln
 scores.html
 	b0
 	b1

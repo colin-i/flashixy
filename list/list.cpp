@@ -123,8 +123,14 @@ int main(int argc,char**argv){
 		fsorts['%s']=sorts_cron;
 		fsorts['%s']=sorts_new;
 	)",stable_sort[0],stable_sort[1]);
-/*in clipa asta Location e identica cu Chronology
 	if(is_flashixy){
+		actionf(buf,R"(
+			function sorts_play(){
+				return flash.external.ExternalInterface.call('sorts_play');
+			}
+			fsorts['%s']=sorts_play;
+		)",stable_sort[2]);
+/*in clipa asta Location e identica cu Chronology
 		actionf(buf,R"(
 			function sorts_loc(){
 				var s=new Array();
@@ -153,7 +159,8 @@ int main(int argc,char**argv){
 		actionf(buf,R"(
 			fsorts['%s']=sorts_loc;
 		)",stable_sort[2]);
-	}*/
+*/
+	}
 	action(R"(
 		var fn=fsorts[n];
 		_root['sorter']=fn();
@@ -163,8 +170,6 @@ int main(int argc,char**argv){
 
 	//nu e nimic fara root.attach
 	//actionf(buf, "_root.attachMovie('%s','%s',_root.getNextHighestDepth());_root.%s.%s=0;", information, information, information, information);
-
-	action(buf);
 
     swf_showframe();
     swf_done();
