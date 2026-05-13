@@ -64,7 +64,7 @@
 
     table.style.borderCollapse = "collapse";
     table.style.width = "100%";
-    table.style.maxWidth = "500px";
+    table.style.maxWidth = "500px";//cu 10 | &#xFF2D; &#xFF2D;...pana la 20 | 1000000000000 (31688 ani) , va fi pe 2 randuri, pot pune white-space: nowrap; la <td>
 
     table.innerHTML = `
       <tr>

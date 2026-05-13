@@ -2,7 +2,5 @@ set -e
 if [ -z "$1" ]; then exit 1; fi
 rsync -avL /home/bc/games/swf_backup/euniverse/ ~/Desktop/colin-i.github.io/
 cd ~/Desktop/colin-i.github.io
-for var in "$@"; do
-	~/test/game/up ${var}
-done
+~/test/game/up "$@"
 ~/test/game/wf

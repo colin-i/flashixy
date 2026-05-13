@@ -7,3 +7,21 @@
   </div>
   <div id="game"></div>
 </div>
+
+<div id="cookie-banner" style="position:fixed;bottom:0;left:0;right:0;background:#111;color:#fff;padding:12px;display:none;z-index:9999;">
+  <p style="margin:0 0 10px 0;">
+    This site uses local storage, with Ruffle for the game, with Firestore for reauthentication if you use the account.
+  </p>
+  <button onclick="acceptCookies()">OK</button>
+</div>
+<script>
+  function acceptCookies() {
+    localStorage.setItem("consent", "1");//localStorage always stores values as strings
+    document.getElementById("cookie-banner").style.display = "none";
+  }
+  window.onload = function () {
+    if (!localStorage.getItem("consent")) {
+      document.getElementById("cookie-banner").style.display = "block";
+    }
+  };
+</script>
