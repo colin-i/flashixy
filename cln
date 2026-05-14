@@ -1,5 +1,4 @@
 
 find . -name "*.o" -type f -not -path "./.git/*" | xargs --no-run-if-empty rm
 find . -name "*.out" -type f -not -path "./.git/*" | xargs --no-run-if-empty rm
-rm -f sound_creator/a.exe
 git status

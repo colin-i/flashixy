@@ -8,10 +8,9 @@ str=$(for i in "${!arr[@]}"; do
 	done |
 	sort -rn |
 	awk '{print $2}' |
-	paste -sd,)
-echo $str
+	paste -sd' ')
 
-a="${a// /,}"
+echo $str
 echo $a
 
 read
