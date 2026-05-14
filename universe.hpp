@@ -32,6 +32,8 @@ extern "C" {
 #define text_off_dividend 3
 #define text_off_dispenser 2
 
+#define maxuint 10
+
 void declare_grid(int grid_width,int grid_height,char* grid,char* init_value);
 void debug_grid(char* container,int grid_width,int grid_height,char* grid,int dist,int color);
 

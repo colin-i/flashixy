@@ -99,36 +99,21 @@ int main(int argc,char**argv){
 		var maximum=%u;
 	)", iterator); //numarulEpisoadelor_total
 	action(buf);
-	action(R"(
-		function sorts_cron(){
+	sprintf(buf,R"(
+		if(n=='%s'){
 			var s=new Array();
 			for(var i=0;i<maximum;){
 				s[i]=i;
 				i++;
 			}
-			return s;
 		}
-		function sorts_new(){
-			var s=new Array();
-			var j=maximum;
-			for(var i=0;i<maximum;){
-				j--;s[i]=j;
-				i++;
-			}
-			return s;
-		}
-		var fsorts=new Object();
-	)");
-	actionf(buf,R"(
-		fsorts['%s']=sorts_cron;
-		fsorts['%s']=sorts_new;
-	)",stable_sort[0],stable_sort[1]);
+	)",stable_sort[0]);
 	if(is_flashixy){
-		actionf(buf,R"(
-			function sorts_play(){
-				return flash.external.ExternalInterface.call('sorts_play');
+		din_buf_in_buf(R"(
+			else if(n=='%s'){
+				var s=flash.external.ExternalInterface.call('sorts_play');
+				_root['sorter_play']=flash.external.ExternalInterface.call('sorts_plays');
 			}
-			fsorts['%s']=sorts_play;
 		)",stable_sort[2]);
 /*in clipa asta Location e identica cu Chronology
 		actionf(buf,R"(
@@ -161,10 +146,19 @@ int main(int argc,char**argv){
 		)",stable_sort[2]);
 */
 	}
+	din_buf_in_buf(R"(
+		else{
+			var s=new Array();
+			var j=maximum;
+			for(var i=0;i<maximum;){
+				j--;s[i]=j;
+				i++;
+			}
+		}
+	)");//stable_sort[1]
+	action(buf);
 	action(R"(
-		var fn=fsorts[n];
-		_root['sorter']=fn();
-		delete fsorts;
+		_root['sorter']=s;
 		_root.list_loaded();
 	)");
 

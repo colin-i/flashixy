@@ -1,9 +1,14 @@
 async function data_read() {
 	let response = await fetch("plays.txt");
 	let txt = await response.text();
-	let plays_index = txt.split(",").map(Number);
+	let plays = txt.split(";");
+	let plays_index = plays[0].split(",").map(Number);
 	window.sorts_play=function(){
 		return plays_index;
+	}
+	let plays_total = plays[1].split(",").map(Number);
+	window.sorts_plays=function(){
+		return plays_total;
 	}
 	<!-- -->
 }

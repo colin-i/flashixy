@@ -278,14 +278,29 @@ int main(int argc,char**argv){
             mc.endFill();
         }
 	)");
+
+	#define list_inset 100
+	int list_w=width-(2*list_inset);
+	int list_h=height-(2*list_inset);
+	int list_unit_h=list_h/lista_ferestre_pagina;
+	int list_unit_w=list_w;
+	int text_height=list_unit_h-static_text_off_subtract;
+
 	char*load_extern;
 	char*start_scenario_ante;
 	char*start_scenario_post;
 	char*list_loaded;
+
 	char*location_mark;
 	int color1=0xFF0000;
 	int color2=0x11aa11;//green//mai inchis ca nu se vede
-	char color1buf[9];
+	char f1[]="xPos-=button_w;if(_root.singleTraining_ids[pos])draw_check(xPos,0x";
+	char f2[]=");if(_root.sharlistSort.data['value']=='";
+	//100 aici vine cam de 7+ cifre
+	char f3[]="'){createTextField('txt_inf',getNextHighestDepth(),xPos-100,0,100,list_unit_h);txt_inf.text=_root.sorter_play[pos];var fmt=new TextFormat();fmt.align='right';fmt.size=";
+	char f4[]=";txt_inf.setTextFormat(fmt);}";
+	char color1buf[sizeof(f1)-1+6+sizeof(f2)-1+sizeof(stable_sort[2])-1+sizeof(f3)-1+maxuint+sizeof(f4)-1+1];
+
 	char*desc_height;
 	if(!is_flashixy){
 		load_extern="";start_scenario_ante="";start_scenario_post="";list_loaded="";location_mark="";desc_height="";
@@ -318,7 +333,7 @@ int main(int argc,char**argv){
 		list_loaded=R"(
 			if(link_id)attachMovie('get_url','get_url',getNextHighestDepth());
 		)";
-		sprintf(color1buf,"0x%x",color1);location_mark=color1buf;
+		sprintf(color1buf,"%s%x%s%s%s%u%s",f1,color1,f2,stable_sort[2],f3,text_height,f4);location_mark=color1buf;
 
 		desc_height="if(_root.singleTraining_mouse[pos])desc_hg-=oneLine_h;";
 	}
@@ -778,12 +793,6 @@ int main(int argc,char**argv){
         var list_bmp=flash.display.BitmapData.loadBitmap('list_texture');
     )");
 
-    #define list_inset 100
-    int list_w=width-(2*list_inset);
-    int list_h=height-(2*list_inset);
-    int list_unit_h=list_h/lista_ferestre_pagina;
-    int list_unit_w=list_w;
-    int text_height=list_unit_h-static_text_off_subtract;
     int list_view_presprite=swf_sprite_new();
     EditText ed;ed.fontid=defFont;ed.font_height=text_height;
 	action_sprite(list_view_presprite,R"(
@@ -861,12 +870,10 @@ int main(int argc,char**argv){
 		play._y=yPos;
 		//play['pos']=pos;//moved to all list_entry
 		//
-		if(levelDone)draw_check(play._x-10-button_w,%u);
-		%s%s%s
-	)",!is_flashixy?color1:color2,\
-	!is_flashixy?"":"if(_root.singleTraining_ids[pos])draw_check(play._x-10-button_w-button_w,",\
-	location_mark,\
-	!is_flashixy?"":");");
+		var xPos=play._x-10-button_w;
+		if(levelDone)draw_check(xPos,%u);
+		%s
+	)",!is_flashixy?color1:color2,location_mark);
     #define text_x list_unit_w/4
     #define rest_x list_unit_w-text_x
     int list_txt=swf_text(rest_x,list_unit_h,"message",(HasFont|ReadOnly|NoSelect),&ed);

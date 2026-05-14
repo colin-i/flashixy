@@ -16,4 +16,4 @@ echo $a
 
 read
 echo -n "$str" > ../../swf_backup/euniverse/plays.txt
-#echo -n ";$a" >> ../../swf_backup/euniverse/plays.txt
+echo -n ";$a" >> ../../swf_backup/euniverse/plays.txt
