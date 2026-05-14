@@ -479,12 +479,16 @@ int main(int argc,char**argv){
 	)");
 	action(R"(
 		function full_path(a){
-			//without the domain, is not working with the new kongregate same origin cors
+			// /dir/a.swf
 			var c=_url.indexOf('//');
 			c=_url.indexOf('/',c+2);
 			var d=_url.lastIndexOf('/');
 			var b=_url.substring(c,d+1);
 			return b+a;
+
+			//http://... now is full to also work multiple swf load in debugger, but still not working
+			//var d=_url.lastIndexOf('/');
+			//return _url.substring(0,d+1)+a;
 		}
 	)");
 	action(R"(

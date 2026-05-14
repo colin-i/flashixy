@@ -99,22 +99,36 @@ int main(int argc,char**argv){
 		var maximum=%u;
 	)", iterator); //numarulEpisoadelor_total
 	action(buf);
-	sprintf(buf,R"(
-		if(n=='%s'){
-			var s=new Array();
-			for(var i=0;i<maximum;){
-				s[i]=i;
-				i++;
-			}
+	char*sorts_chron=R"(
+		var s=new Array();
+		for(var i=0;i<maximum;){
+			s[i]=i;
+			i++;
 		}
-	)",stable_sort[0]);
-	if(is_flashixy){
-		din_buf_in_buf(R"(
-			else if(n=='%s'){
-				var s=flash.external.ExternalInterface.call('sorts_play');
-				_root['sorter_play']=flash.external.ExternalInterface.call('sorts_plays');
-			}
-		)",stable_sort[2]);
+	)";
+	char*sorts_new=R"(
+		var s=new Array();
+		var j=maximum;
+		for(var i=0;i<maximum;){
+			j--;s[i]=j;
+			i++;
+		}
+	)";
+	char*sorts_play=R"(
+		var s=flash.external.ExternalInterface.call('sorts_play');
+		_root['sorter_play']=flash.external.ExternalInterface.call('sorts_plays');
+	)";
+	char*s0;char*ffirst;char*flast;
+	if(!is_flashixy){
+		s0=sorts[0];
+		ffirst=sorts_new;
+		buf2[0]='\0';
+		flast=sorts_chron;
+	}else{
+		s0=sorts2[0];
+		ffirst=sorts_play;
+		sprintf(buf2,"else if(n=='%s'){%s}",sorts2[1],sorts_chron);
+		flast=sorts_new;
 /*in clipa asta Location e identica cu Chronology
 		actionf(buf,R"(
 			function sorts_loc(){
@@ -146,17 +160,7 @@ int main(int argc,char**argv){
 		)",stable_sort[2]);
 */
 	}
-	din_buf_in_buf(R"(
-		else{
-			var s=new Array();
-			var j=maximum;
-			for(var i=0;i<maximum;){
-				j--;s[i]=j;
-				i++;
-			}
-		}
-	)");//stable_sort[1]
-	action(buf);
+	actionf(buf,"if(n=='%s'){%s}%selse{%s}",s0,ffirst,buf2,flast);
 	action(R"(
 		_root['sorter']=s;
 		_root.list_loaded();
