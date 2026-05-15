@@ -1,6 +1,6 @@
 set -e
-g++ -I/home/bc/Desktop/actionswf/include -Wno-write-strings a.c -L/home/bc/Desktop/actionswf -lactionswf -lz
-a=`LD_LIBRARY_PATH=/home/bc/Desktop/actionswf ./a.out`
+g++ -I${HOME}/Desktop/actionswf/include -Wno-write-strings a.c -L${HOME}/Desktop/actionswf -lactionswf -lz
+a=`LD_LIBRARY_PATH=${HOME}/Desktop/actionswf ./a.out`
 
 arr=( $a )
 str=$(for i in "${!arr[@]}"; do
@@ -13,6 +13,8 @@ str=$(for i in "${!arr[@]}"; do
 echo $str
 echo $a
 
-read
+if [ -z "${no_inter}" ]; then
+	read
+fi
 echo -n "$str" > ../../swf_backup/euniverse/plays.txt
 echo -n ";$a" >> ../../swf_backup/euniverse/plays.txt

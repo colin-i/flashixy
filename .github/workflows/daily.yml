@@ -1,0 +1,53 @@
+name: Daily Job
+
+on:
+ schedule:
+  - cron: '0 0 * * *'   # every day at 00:00 UTC
+ workflow_dispatch:      # optional manual trigger
+
+jobs:
+ run-job:
+  runs-on: ubuntu-latest
+  steps:
+   - uses: actions/checkout@v4
+     with:
+      repository: colin-i/games
+      path: games
+   - uses: actions/checkout@v4
+     with:
+      path: games/list
+   - name: Run script
+     run: |
+      mv games ~/
+      cd ~
+
+      git clone -n --depth=1 --filter=tree:0 https://github.com/colin-i/test
+      cd test
+      git sparse-checkout set --no-cone /stats
+      git checkout
+      git sparse-checkout set --no-cone /update
+      git checkout
+      cd ..
+
+      mkdir stats
+      cd stats
+      ~/test/stats/k
+      cd ..
+
+      git clone -n --depth=1 --filter=tree:0 https://github.com/colin-i/actionswf
+      mkdir s
+      mv actionswf s/actionswf-1
+      mkdir Desktop/actionswf
+
+      cd games
+      mkdir -p swf_backup/euniverse
+      cd list/share
+      no_inter=x ./a
+
+      cd ../..
+      mv swf_backup/euniverse/plays.txt $GITHUB_WORKSPACE/plays.txt
+   - name: test artifact
+     uses: actions/upload-artifact@v4
+     with:
+      name: plays.txt
+      path: ./plays.txt
