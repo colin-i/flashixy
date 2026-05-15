@@ -47,7 +47,7 @@ jobs:
 
       cd ../..
       mv swf_backup/euniverse/plays.txt $GITHUB_WORKSPACE/plays.txt
-   - name: test artifact
+   - name: artifact
      uses: actions/upload-artifact@v4
      with:
       name: plays.txt
