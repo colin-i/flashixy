@@ -131,7 +131,8 @@ jobs:
      run: |
       TAG=$(gh release list --repo colin-i/colin-i.github.io --json tagName --jq '.[0].tagName')
       echo "Using tag: $TAG"
-      gh release upload "$TAG" --repo colin-i/colin-i.github.io --clobber artifact/plays.txt:plays.txt
+      cd artifact
+      gh release upload "$TAG" --repo colin-i/colin-i.github.io --clobber plays.txt
    - name: Trigger deploy workflow
      env:
       GH_TOKEN: ${{ secrets.PAT }}
