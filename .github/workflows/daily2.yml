@@ -125,3 +125,16 @@ jobs:
 
       echo
       echo "Sorted index validation passed"
+   - name: Upload updated plays.txt to release
+     env:
+      GH_TOKEN: ${{ secrets.PAT }}
+     run: |
+      TAG=$(gh release list --repo colin-i/colin-i.github.io --json tagName --jq '.[0].tagName')
+      echo "Using tag: $TAG"
+      gh release upload "$TAG" --repo colin-i/colin-i.github.io --clobber artifact/plays.txt:plays.txt
+   - name: Trigger deploy workflow
+     env:
+      GH_TOKEN: ${{ secrets.PAT }}
+     run: |
+      gh workflow run deploy.yml --repo colin-i/colin-i.github.io --ref deploy -f branch=main
+      echo "Deploy workflow triggered"
