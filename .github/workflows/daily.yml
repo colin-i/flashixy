@@ -2,7 +2,8 @@ name: Daily Job
 
 on:
  schedule:
-  - cron: '0 0 * * *'   # every day at 00:00 UTC
+  - cron: '0 12 * * *'   # every day at 00:00 UTC
+    timezone: 'Europe/Bucharest'
  workflow_dispatch:      # optional manual trigger
 
 env:
