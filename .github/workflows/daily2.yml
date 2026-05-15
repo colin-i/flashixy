@@ -36,10 +36,17 @@ jobs:
    - name: Validate plays.txt
      shell: bash
      run: |
-      set -euo pipefail
-
       release_content=$(cat plays.txt)
       artifact_content=$(cat artifact/plays.txt)
+
+      if [[ "$release_content" != *";"* ]]; then
+       echo "Invalid release format"
+       exit 1
+      fi
+      if [[ "$artifact_content" != *";"* ]]; then
+       echo "Invalid artifact format"
+       exit 1
+      fi
 
       release_values="${release_content#*;}"
 
