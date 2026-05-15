@@ -5,14 +5,14 @@ on:
   - cron: '0 0 * * *'   # every day at 00:00 UTC
  workflow_dispatch:      # optional manual trigger
 
+env:
+ #for gh
+ GITHUB_TOKEN: ${{ secrets.PAT }}
+
 jobs:
  run-job:
-  runs-on: ubuntu-latest
+  runs-on: ubuntu-24.04-arm #arm for a.c actionswf logic in list/share/a
   steps:
-   - uses: actions/checkout@v4
-     with:
-      repository: colin-i/games
-      path: games
    - uses: actions/checkout@v4
      with:
       path: games/list
@@ -23,21 +23,21 @@ jobs:
 
       git clone -n --depth=1 --filter=tree:0 https://github.com/colin-i/test
       cd test
-      git sparse-checkout set --no-cone /stats
-      git checkout
-      git sparse-checkout set --no-cone /update
+      git sparse-checkout set stats update
       git checkout
       cd ..
 
-      mkdir stats
+      mkdir -p stats/k
       cd stats
-      ~/test/stats/k
+      ~/test/stats/k2
       cd ..
 
       git clone -n --depth=1 --filter=tree:0 https://github.com/colin-i/actionswf
       mkdir s
       mv actionswf s/actionswf-1
-      mkdir Desktop/actionswf
+
+      mkdir -p Desktop/actionswf
+      ~/test/update/arch
 
       cd games
       mkdir -p swf_backup/euniverse
