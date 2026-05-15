@@ -10,7 +10,6 @@ jobs:
   runs-on: ubuntu-latest
 
   steps:
-   # Download artifact from daily.yml workflow run
    - name: Download latest daily.yml artifact
      uses: dawidd6/action-download-artifact@v9
      with:
@@ -23,111 +22,99 @@ jobs:
      run: |
       echo "Artifact:"
       cat artifact/plays.txt
-   # Download plays.txt asset from latest release
    - name: Download plays.txt from latest release
-    env:
-     GH_TOKEN: ${{ secrets.PAT }}
-    run: |
-     TAG=$(gh release view --repo colin-i/colin-i.github.io --json tagName --jq .tagName)
-     gh release download "$TAG" --repo colin-i/colin-i.github.io --pattern plays.txt
+     env:
+      GH_TOKEN: ${{ secrets.PAT }}
+     run: |
+      TAG=$(gh release list --repo colin-i/colin-i.github.io --json tagName --jq '.[0].tagName')
+      gh release download "$TAG" --repo colin-i/colin-i.github.io --pattern plays.txt
    - name: Show release asset
-    run: |
-     echo "Release asset:"
-     cat plays.txt
+     run: |
+      echo "Release asset:"
+      cat plays.txt
 
    - name: Validate plays.txt
-    shell: bash
-    run: |
-     set -euo pipefail
+     shell: bash
+     run: |
+      set -euo pipefail
 
-     release_content=$(cat plays.txt)
-     artifact_content=$(cat artifact/plays.txt)
+      release_content=$(cat plays.txt)
+      artifact_content=$(cat artifact/plays.txt)
 
-     #release_indexes="${release_content%%;*}"
-     release_values="${release_content#*;}"
+      release_values="${release_content#*;}"
 
-     artifact_indexes="${artifact_content%%;*}"
-     artifact_values="${artifact_content#*;}"
+      artifact_indexes="${artifact_content%%;*}"
+      artifact_values="${artifact_content#*;}"
 
-     read -ra release_arr <<< "$release_values"
-     read -ra artifact_arr <<< "$artifact_values"
-     read -ra artifact_sorted_indexes <<< "$artifact_indexes"
+      read -ra release_arr <<< "$release_values"
+      read -ra artifact_arr <<< "$artifact_values"
+      read -ra artifact_sorted_indexes <<< "$artifact_indexes"
 
-     echo "Release values count: ${#release_arr[@]}"
-     echo "Artifact values count: ${#artifact_arr[@]}"
-     echo
+      echo "Release values count: ${#release_arr[@]}"
+      echo "Artifact values count: ${#artifact_arr[@]}"
+      echo
 
-     if [ "${#release_arr[@]}" -ne "${#artifact_arr[@]}" ]; then
-      echo "Array size mismatch"
-      exit 1
-     fi
-
-     echo "Checking value ranges..."
-     for i in "${!release_arr[@]}"; do
-      r=${release_arr[$i]}
-      a=${artifact_arr[$i]}
-
-      echo "Index $i -> release=$r artifact=$a allowed=[${r},$((r+199))]"
-
-      if (( a < r || a >= r + 200 )); then
-       echo "FAILED at index $i"
-       exit 1
-      fi
-     done
-
-     echo
-     echo "Range validation passed"
-     echo
-
-     echo "Validating sorted indexes..."
-
-     declare -a sorted_arr=()
-
-     for idx in "${artifact_sorted_indexes[@]}"; do
-      if (( idx < 0 || idx >= ${#artifact_arr[@]} )); then
-       echo "Invalid sorted index: $idx"
-       exit 1
-      fi
-      value=${artifact_arr[$idx]}
-      echo "sorted_arr[$idx]=$value"
-      sorted_arr[$idx]=$value
-     done
-
-     echo
-     echo "Checking continuous keys..."
-
-     if [ "${#sorted_arr[@]}" -ne "${#artifact_arr[@]}" ]; then
-      echo "sorted_arr size mismatch"
-      exit 1
-     fi
-
-     for ((i=0; i<${#artifact_arr[@]}; i++)); do
-      if [ -z "${sorted_arr[$i]+x}" ]; then
-       echo "Missing key in sorted_arr: $i"
-       exit 1
-      fi
-     done
-
-     echo "Continuous keys validation passed"
-     echo
-
-     echo "Checking descending order..."
-
-     prev=-1
-
-     for ((i=0; i<${#sorted_arr[@]}; i++)); do
-      value=${sorted_arr[$i]}
-
-      echo "$i -> $value"
-
-      if (( prev != -1 && value > prev )); then
-       echo "Descending order validation failed"
-       echo "Value $value is greater than previous $prev"
+      if [ "${#release_arr[@]}" -ne "${#artifact_arr[@]}" ]; then
+       echo "Array size mismatch"
        exit 1
       fi
 
-      prev=$value
-     done
+      echo "Checking value ranges..."
+      for i in "${!release_arr[@]}"; do
+       r=${release_arr[$i]}
+       a=${artifact_arr[$i]}
 
-     echo
-     echo "Sorted index validation passed"
+       echo "Index $i -> release=$r artifact=$a allowed=[${r},$((r+199))]"
+
+       if (( a < r || a >= r + 200 )); then
+        echo "FAILED at index $i"
+        exit 1
+       fi
+      done
+
+      echo
+      echo "Range validation passed"
+      echo
+
+      echo "Validating sorted indexes..."
+
+      declare -a sorted_arr=()
+
+      for idx in "${artifact_sorted_indexes[@]}"; do
+       if (( idx < 0 || idx >= ${#artifact_arr[@]} )); then
+        echo "Invalid sorted index: $idx"
+        exit 1
+       fi
+       value=${artifact_arr[$idx]}
+       echo "push $value from idx=$idx"
+       sorted_arr+=("$value")
+      done
+
+      echo
+      echo "Checking array size..."
+
+      if [ "${#sorted_arr[@]}" -ne "${#artifact_arr[@]}" ]; then
+       echo "sorted_arr size mismatch"
+       exit 1
+      fi
+
+      echo "Checking descending order..."
+
+      prev=-1
+
+      for ((i=0; i<${#sorted_arr[@]}; i++)); do
+       value=${sorted_arr[$i]}
+
+       echo "$i -> $value"
+
+       if (( prev != -1 && value > prev )); then
+        echo "Descending order validation failed"
+        echo "Value $value is greater than previous $prev"
+        exit 1
+       fi
+
+       prev=$value
+      done
+
+      echo
+      echo "Sorted index validation passed"
