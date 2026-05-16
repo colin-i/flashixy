@@ -2,8 +2,9 @@ name: Sync plays.txt from artifact and release
 
 on:
  workflow_dispatch:
- #schedule:
- #	- cron: '0 0 * * *'
+ schedule:
+  - cron: '0 0 * * *'
+    timezone: 'Europe/Bucharest'
 
 jobs:
  sync:
@@ -39,6 +40,10 @@ jobs:
       release_content=$(cat plays.txt)
       artifact_content=$(cat artifact/plays.txt)
 
+      if [ "$release_content" = "$artifact_content" ]; then
+       echo "Equals"
+       exit 1
+      fi
       if [[ "$release_content" != *";"* ]]; then
        echo "Invalid release format"
        exit 1

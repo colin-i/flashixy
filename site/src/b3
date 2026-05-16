@@ -27,7 +27,7 @@
     const ref = doc(db, "plays", "plays");
     await updateDoc( ref,
       {
-        Test: increment(1)
+         [name]: increment(1)
       }
     ); //setDoc will repleace all document if not with ,{ merge : true }
     if (ins) {
