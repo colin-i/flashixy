@@ -1130,7 +1130,7 @@ int main(int argc,char**argv){
 
 	submitform(defFont,NULL,R"(
 		_root.start_scenario(_root.game.episode_number)
-	)","",is_flashixy);//t race(game_name);
+	)",NULL,is_flashixy);//t race(game_name);
 
 	//com
 	//asta era cand erau toate: shared_write();

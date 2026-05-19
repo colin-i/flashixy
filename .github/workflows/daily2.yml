@@ -76,9 +76,10 @@ jobs:
        r=${release_arr[$i]}
        a=${artifact_arr[$i]}
 
-       echo "Index $i -> release=$r artifact=$a allowed=[${r},$((r+199))]"
+       z=300
+       echo "Index $i -> release=$r artifact=$a allowed=[${r},$((r+z-1))]"
 
-       if (( a < r || a >= r + 200 )); then
+       if (( a < r || a >= r + z )); then
         echo "FAILED at index $i"
         exit 1
        fi

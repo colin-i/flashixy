@@ -300,7 +300,7 @@ int static_text_submit(int bound_width,EditText ed,char*initialtext){
 	int text_id=swf_text(bound_width,hg,"",(HasFont|HasText|HasTextColor|NoSelect|ReadOnly),&ed);
 	return text_id;
 }
-void submitform(int deffont,char*nume,char*returner,char*la_load_extra,bool is_flashixy=false){
+void submitform(int deffont,char*nume,char*returner,char*la_load_extra=NULL,bool is_flashixy=false){
 	int submit_width=540;
 	int submit_height=380;
 
@@ -427,7 +427,7 @@ void submitform(int deffont,char*nume,char*returner,char*la_load_extra,bool is_f
 		_x=%u;_y=%u
 	)",(width-submit_width)/2,(height-submit_height)/2);
 
-	action_sprite(submitsprite,la_load_extra);
+	if(la_load_extra)action_sprite(submitsprite,la_load_extra);
 
 	swf_sprite_showframe(submitsprite);
 	int submitform=swf_sprite_done(submitsprite);
