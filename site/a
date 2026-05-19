@@ -11,4 +11,5 @@ a () {
 a index.html
 a member.html
 a scores.html
-mv x ../../index.html
+a x
+mv ../x ../../index.html

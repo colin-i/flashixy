@@ -3,7 +3,15 @@
     <a href="index.html">Games</a>
     <a href="member.html">Account</a>
     <a href="scores.html">Scores</a>
-    <a href="https://github.com/colin-i/flashixy">Source</a>
+    <span>
+      <a href="https://x.com/flashixy" target="_blank">
+        <img src="x-icon.png" alt="X" width="16" height="16">
+      </a>
+      <a href="https://facebook.com/flashixy" target="_blank">
+        <img src="facebook-icon.png" alt="Facebook" width="16" height="16">
+      </a>
+      <a href="https://github.com/colin-i/flashixy">Source</a>
+    </span>
   </div>
   <div id="game"></div>
 </div>

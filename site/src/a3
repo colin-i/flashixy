@@ -3,13 +3,6 @@
 window.onSwfReady = function() {
     return !window.matchMedia("(pointer: fine)").matches;
 }
-
-window.RufflePlayer = window.RufflePlayer || {};
-window.RufflePlayer.config = {
-    allowScriptAccess: true,
-    autoplay: "on",
-    preferredRenderer: "webgl"
-};
 const ruffle = window.RufflePlayer.newest();
 const player = ruffle.createPlayer();
 player.style.width = "100%";
