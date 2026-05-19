@@ -11,5 +11,7 @@ a () {
 a index.html
 a member.html
 a scores.html
+
+cp x ../../index.html
 a x
-mv ../x ../../index.html
+mv ../x ../../swf_backup/universe/index.html
