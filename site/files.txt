@@ -17,9 +17,11 @@ index.html
 		s1
 		s2
 		a3
-			b3_2
-				c3_2
 			blank
+			b3_2
+				a3_2
+			b3_2
+				a3_3
 #c this is a ln
 x
 	a0
@@ -28,7 +30,8 @@ x
 	c2
 	a3
 		c3
-		c3_2
+		a3_2
+		a3_3
 #d ln
 member.html
 	b0

@@ -1,6 +1,5 @@
 set -e
 if [ -z "$1" ]; then exit 1; fi
-echo rsync -avL ${exclude} /home/bc/games/swf_backup/euniverse/ ~/Desktop/colin-i.github.io/
 rsync -avL ${exclude} /home/bc/games/swf_backup/euniverse/ ~/Desktop/colin-i.github.io/
 cd ~/Desktop/colin-i.github.io
 ~/test/game/up "$@"

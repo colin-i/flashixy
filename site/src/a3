@@ -3,10 +3,16 @@
 window.onSwfReady = function() {
     return !window.matchMedia("(pointer: fine)").matches;
 }
-const ruffle = window.RufflePlayer.newest();
-const player = ruffle.createPlayer();
-player.style.width = "100%";
-player.style.height = "100%";
-document.getElementById("game").appendChild(player);
-<!-- -->
+try{
+    const ruffle = window.RufflePlayer.newest();
+    const player = ruffle.createPlayer();
+    player.style.width = "100%";
+    player.style.height = "100%";
+    document.getElementById("game").appendChild(player);
+    <!-- -->
+} catch (err) {
+    console.error(err);
+    window.RufflePlayer.config.polyfills=true;
+    <!-- -->
+}
 </script>
