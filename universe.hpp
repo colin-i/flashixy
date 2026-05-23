@@ -233,9 +233,11 @@ void init_episode(){
 #define list_lineSz 2
 
 #define sorts_stable_length 3
+char*stable_sort[sorts_stable_length]={"Chronology","Newness","Plays"};
+//#define sorts_stable_length 5
+//char*stable_sort[sorts_stable_length]={"Time","New","Plays","Site","Builder"};//Compiler is not fitting
 //#define rat "Rating"
 //#define pop "Plays"
-char*stable_sort[sorts_stable_length]={"Chronology","Newness","Plays"};
 //da null asa, oare de ce: char* pop = sorts[1]; char* rat = sorts[2];
 //The compiler will automatically concatenate adjacent strings
 //#define rat_user rat "_user"
@@ -246,6 +248,7 @@ char* sorts[sorts_length]={stable_sort[1],stable_sort[0]}; // 4 "Location","Play
 
 #define sorts2_length sorts_stable_length
 char* sorts2[sorts2_length]={stable_sort[2],stable_sort[0],stable_sort[1]};
+//char* sorts2[sorts2_length]={stable_sort[2],stable_sort[0],stable_sort[1],stable_sort[3],stable_sort[4]};
 
 //la automatics
 void din_buf_in_buf(char* s, ...) {
