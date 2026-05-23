@@ -235,7 +235,7 @@ void init_episode(){
 #define sorts_stable_length 3
 char*stable_sort[sorts_stable_length]={"Chronology","Newness","Plays"};
 //#define sorts_stable_length 5
-//char*stable_sort[sorts_stable_length]={"Time","New","Plays","Site","Builder"};//Compiler is not fitting
+//char*stable_sort[sorts_stable_length]={"Time","New","Plays","Site","Builder"};//Compiler/Newness is not fitting
 //#define rat "Rating"
 //#define pop "Plays"
 //da null asa, oare de ce: char* pop = sorts[1]; char* rat = sorts[2];
