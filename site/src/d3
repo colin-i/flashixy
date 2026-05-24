@@ -36,20 +36,25 @@
     let name = document.getElementById("name").value.trim();
     try {
       const oldName = await get_name();
-      const newNameRef = doc(db, "usernames", name);
-      const newNameSnap = await getDoc(newNameRef);
-      if (newNameSnap.exists()) {
-        throw new Error("Name already taken");
-      }
       await runTransaction(db, async (transaction) => {//must be in transaction to avoid multiple users same call
-        // reserve new username
-        transaction.set(newNameRef, {//transaction.create is not a function, must update/set
-          uid: auth.currentUser.uid
-        });
-        // update user profile
-        transaction.set(nameRef, {
-          name: name
-        });
+        // reserve new username only if not blank
+        if (name) {
+          const newNameRef = doc(db, "usernames", name);
+          const newNameSnap = await transaction.get(newNameRef);
+          if (newNameSnap.exists()) {
+            throw new Error("Name already taken");
+          }
+          // reserve new username
+          transaction.set(newNameRef, {//transaction.create is not a function, must update/set
+            uid: auth.currentUser.uid
+          });
+          // update user profile
+          transaction.set(nameRef, {
+            name: name
+          });
+        } else {
+          transaction.delete(nameRef);
+        }
         // delete old username reservation
         if (oldName) {
           const oldNameRef = doc(db, "usernames", oldName);
