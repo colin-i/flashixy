@@ -18,7 +18,9 @@ a x
 cd ..
 mv ./x ../swf_backup/universe/index.html
 
-cd ..
-vs=~/Desktop/arh/index.html
-js-beautify ./swf_backup/universe/index.html > ${vs}
-diff ${vs} ${vs}2
+if [ -z "${no_min}" ]; then
+	cd ..
+	vs=~/Desktop/arh/index.html
+	js-beautify ./swf_backup/universe/index.html > ${vs}
+	diff ${vs} ${vs}2
+fi

@@ -141,8 +141,9 @@ ep_keys Space_Zones_keys[]={{&left_arrow,"Rotation","Rotate Left"},{&right_arrow
 episoade_pack Space_Zones={Space_Zones_ep,"Reach the end platforms, dispose of the enemies, shot all the targets or avoid the enemies.",Space_Zones_keys,NULL,"space-adventure",kongregate};//,128552
 //
 #define Rooms_ep "Rooms"
+#define Rooms_desc "Shot all the ships."
 ep_keys Rooms_keys[]={{&left_arrow,"Rotation","Rotate Left"},{&right_arrow,"Rotation","Rotate Right"},{&up_arrow,"Movement","Forward"},{&down_arrow,"Movement","Backward"},{&strafe_left,"Movement","Strafe Left"},{&strafe_right,"Movement","Strafe Right"},{&action_key,"Shot","Shot" },{&aux_key,"Switch auto-move","Change auto-move sense"},{ &auto_shot,"Continuous shot","Auto-Shot" },{ &auto_move,"Continuous move","Auto-Move" },{NULL}};
-episoade_pack Rooms={Rooms_ep,"Shot all the ships.",Rooms_keys,NULL,NULL,kongregate,"rooms"};//,128553
+episoade_pack Rooms={Rooms_ep,Rooms_desc,Rooms_keys,NULL,NULL,kongregate,"rooms"};//,128553
 //
 #define Road_ep "Road"
 ep_keys Road_keys[]={{&left_arrow,"Rotation","Rotate Left"},{&right_arrow,"Rotation","Rotate Right"},{&action_key,"Shot","Shot" },{&strafe_left,"Movement","Strafe Left"},{&strafe_right,"Movement","Strafe Right"},{ &auto_shot,"Continuous shot","Auto-Shot" },{NULL}};
@@ -161,10 +162,12 @@ episoade_pack Roulette= { "Roulette","Roulette is a casino game. The luck plays 
 ep_keys Mahjong_keys[]={{&action_key,"Undo","Special Undo" },{NULL}};
 episoade_pack Mahjong = { "Mahjong","Mahjong is a puzzle game. Match all the tiles.",Mahjong_keys,"Select Tile","mahjong",kongregate};//,131988
 //
-ep_keys Test_keys[]={{&left_arrow,"Movement","Left Direction"},{&right_arrow,"Movement","Right Direction"},{&up_arrow,"Movement","Up Direction"},{&down_arrow,"Movement","Down Direction"},{&strafe_left,"Rotate Left","Strafe Left"},{&strafe_right,"Rotate Right","Strafe Right"},{&action_key,"Create a Sprite","Primary Action"},{&aux_key,"Reset Rotation","Secondary Action"},{&auto_shot,"Colorize","Auto-Shot"},{&auto_move,"Rotate Continuously","Auto-Move"},{NULL}};
-episoade_pack Test = { "Test","A simple test.",Test_keys,"Resolve Sprite",NULL,flashixy};
+//ep_keys Test_keys[]={{&left_arrow,"Movement","Left Direction"},{&right_arrow,"Movement","Right Direction"},{&up_arrow,"Movement","Up Direction"},{&down_arrow,"Movement","Down Direction"},{&strafe_left,"Rotate Left","Strafe Left"},{&strafe_right,"Rotate Right","Strafe Right"},{&action_key,"Create a Sprite","Primary Action"},{&aux_key,"Reset Rotation","Secondary Action"},{&auto_shot,"Colorize","Auto-Shot"},{&auto_move,"Rotate Continuously","Auto-Move"},{NULL}};
+//episoade_pack Test = { "Test","A simple test.",Test_keys,"Resolve Sprite",NULL,flashixy};
+#define Chambers_ep "Chambers"
+episoade_pack Chambers={Chambers_ep,Rooms_desc,Rooms_keys,NULL,NULL,flashixy};// on 25-mai-2026 first score in firestore
 //
-episoade_pack* episoade[]={&Universe,&Ores_for_Ship,&Driving_the_Ship,&Planet_Landing,&Rocks_Fall,&Balls_Play,&Asteroids,&Cubes,&Moving_Forward,&Jump,&On_the_Rail,&Space_Trip,&Space_Zones,&Rooms,&Road,&Racecourse,&Card_Flip,&Treasure_Finder,&Fruit_Cocktail,&Naval_War,&Turret_Defence,&Ball_Hit,&Lotto,&Roulette,&Mahjong,&Test };
+episoade_pack* episoade[]={&Universe,&Ores_for_Ship,&Driving_the_Ship,&Planet_Landing,&Rocks_Fall,&Balls_Play,&Asteroids,&Cubes,&Moving_Forward,&Jump,&On_the_Rail,&Space_Trip,&Space_Zones,&Rooms,&Road,&Racecourse,&Card_Flip,&Treasure_Finder,&Fruit_Cocktail,&Naval_War,&Turret_Defence,&Ball_Hit,&Lotto,&Roulette,&Mahjong,&Chambers};
 
 int numarulEpisoadelor_total=sizeof(episoade)/sizeof(episoade_pack*);
 
@@ -233,9 +236,9 @@ void init_episode(){
 #define list_lineSz 2
 
 #define sorts_stable_length 3
-char*stable_sort[sorts_stable_length]={"Chronology","Newness","Plays"};
+char*stable_sort[sorts_stable_length]={"Chronology","Newness","Plays"};//Compiler
 //#define sorts_stable_length 5
-//char*stable_sort[sorts_stable_length]={"Time","New","Plays","Site","Builder"};//Compiler/Newness is not fitting
+//char*stable_sort[sorts_stable_length]={"Time","New","Plays","Site","Builder"};//Compiler/Newness is not fitting //only if not predefining at Location
 //#define rat "Rating"
 //#define pop "Plays"
 //da null asa, oare de ce: char* pop = sorts[1]; char* rat = sorts[2];

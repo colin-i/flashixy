@@ -158,13 +158,13 @@
         document.getElementById("account").textContent = "";//more at deleteUser
       }
       // cannot play by keeping deleted uids, they can be regenerated
-      const oldRef = doc(db, "Test", auth.currentUser.uid);
+      const oldRef = doc(db, "Chambers", auth.currentUser.uid);
       const oldSnap = await getDoc(oldRef);
       if (oldSnap.exists()) {
         const batch = writeBatch(db);
         const orphanRef = doc(collection(db, "orphanScores"));
         batch.set(orphanRef, {
-            game: "Test",
+            game: "Chambers",
             score: oldSnap.data().score
         });
         batch.delete(oldRef);
@@ -223,7 +223,7 @@
       document.getElementById("account").textContent = await get_name();
 
       let rows = "";
-      rows += await bestScore("Test", auth.currentUser.uid);
+      rows += await bestScore("Chambers", auth.currentUser.uid);
       if (rows) {
         const table = document.createElement("table");
         table.style.borderCollapse = "collapse";

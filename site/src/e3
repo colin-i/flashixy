@@ -19,14 +19,14 @@
 
   async function load_scores () {
     const testQ = query(
-      collection(db, "Test"),
+      collection(db, "Chambers"),
       orderBy("score", "asc"),
       limit(10)
     );
 
     const orphanQ = query(
       collection(db, "orphanScores"),
-      where("game", "==", "Test"),
+      where("game", "==", "Chambers"),
       orderBy("score", "asc"),
       limit(10)
     );
@@ -42,7 +42,7 @@
       allScores.push({
         id: doc.id,
         score: doc.data().score,
-        type: 0   // Test collection
+        type: 0   // Chambers collection
       });
     });
 
@@ -57,7 +57,7 @@
     const top10 = allScores.slice(0, 10);
 
     // game title
-    gameDiv.innerHTML = `<h2>Test</h2>`;
+    gameDiv.innerHTML = `<h2>Chambers</h2>`;
 
     // create table
     const table = document.createElement("table");

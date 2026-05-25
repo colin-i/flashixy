@@ -29,7 +29,7 @@
       {
          [name]: increment(1)
       }
-    ); //setDoc will repleace all document if not with ,{ merge : true }
+    ); //setDoc will replace all document if not with ,{ merge : true }
     if (ins) {
         await setDoc(nameRef, {
           score: score
@@ -38,7 +38,7 @@
   };
   onAuthStateChanged(auth, async (user) => {//this will fire at least once
     if (user) {
-      nameRef = doc(db, "Test", user.uid);
+      nameRef = doc(db, "Chambers", user.uid);
       ins = true;
     }
   });

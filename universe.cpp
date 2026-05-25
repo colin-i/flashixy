@@ -300,10 +300,10 @@ int main(int argc,char**argv){
 	char f3[]="'){createTextField('txt_inf',getNextHighestDepth(),xPos-100,0,100,list_unit_h);txt_inf.text=_root.sorter_play[pos];var fmt=new TextFormat();fmt.align='right';fmt.size=";
 	char f4[]=";txt_inf.setTextFormat(fmt);}";
 	char color1buf[sizeof(f1)-1+6+sizeof(f2)-1+sizeof(stable_sort[2])-1+sizeof(f3)-1+maxuint+sizeof(f4)-1+1];
+	//char*desc_height;
 
-	char*desc_height;
 	if(!is_flashixy){
-		load_extern="";start_scenario_ante="";start_scenario_post="";list_loaded="";location_mark="";desc_height="";
+		load_extern="";start_scenario_ante="";start_scenario_post="";list_loaded="";location_mark="";//desc_height="";
 	}else{
 		presprite=swf_sprite_new();
 		action_sprite(presprite,R"(
@@ -335,7 +335,7 @@ int main(int argc,char**argv){
 		)";
 		sprintf(color1buf,"%s%x%s%s%s%u%s",f1,color1,f2,stable_sort[2],f3,text_height,f4);location_mark=color1buf;
 
-		desc_height="if(_root.singleTraining_mouse[pos])desc_hg-=oneLine_h;";
+		//desc_height="if(_root.singleTraining_mouse[pos])desc_hg-=oneLine_h;";
 	}
 	actionf(buf,R"(
 		//url
@@ -710,7 +710,7 @@ int main(int argc,char**argv){
 	//+(oneLine_h*3/4);
 	if(dispKey.length==10){
 		desc_hg-=oneLine_h;
-		%s
+		//%%s
 	}
         add_mc_top(_root.singleTraining_desc[pos],desc_hg);
         //
@@ -738,7 +738,7 @@ int main(int argc,char**argv){
         total_h+=oneLine_h;
         //
         _y=(height-total_h)/2;
-    )",desc_height,mouse_disp_name);
+    )",mouse_disp_name);//,desc_height
     swf_sprite_showframe(presprite);
     sprite=swf_sprite_done(presprite);swf_exports_add(sprite,"scenario_info");
     //info_button
@@ -1134,14 +1134,14 @@ int main(int argc,char**argv){
 
 	//com
 	//asta era cand erau toate: shared_write();
-	if(!is_flashixy)
-		shared_write_ex(true,//13 22
-				1,//13
-				0,
-				true,//space_env
-				1    //7 13
-		);
-	else shared_write_ex(false,0,0,true,1);
+	//if(!is_flashixy) chambers e la fel ca 13
+	shared_write_ex(true,//13 22
+			1,//13
+			0,
+			true,//space_env
+			1    //7 13
+	);
+	//else shared_write_ex(false,0,0,true,1);
 
 	action("createEmptyMovieClip('game',getNextHighestDepth());home_set();attachMovie('bar','bar',getNextHighestDepth())");
 	if (bar_x != 0){
