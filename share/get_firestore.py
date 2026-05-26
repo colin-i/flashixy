@@ -4,4 +4,4 @@ url = "https://firestore.googleapis.com/v1/projects/flashixy/databases/(default)
 
 data = requests.get(url).json()
 
-print(data["fields"]["Test"]["integerValue"])
+print(data["fields"]["Chambers"]["integerValue"])
