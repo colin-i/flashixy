@@ -710,7 +710,11 @@ int main(int argc,char**argv){
 	//+(oneLine_h*3/4);
 	if(dispKey.length==10){
 		desc_hg-=oneLine_h;
+
+		//this always happens at the moment
 		//%%s
+		//if(_root.singleTraining_mouse[pos])
+		desc_hg-=oneLine_h;
 	}
         add_mc_top(_root.singleTraining_desc[pos],desc_hg);
         //

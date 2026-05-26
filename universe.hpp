@@ -142,8 +142,9 @@ episoade_pack Space_Zones={Space_Zones_ep,"Reach the end platforms, dispose of t
 //
 #define Rooms_ep "Rooms"
 #define Rooms_desc "Shot all the ships."
+#define Rooms_touch "Change opening door"
 ep_keys Rooms_keys[]={{&left_arrow,"Rotation","Rotate Left"},{&right_arrow,"Rotation","Rotate Right"},{&up_arrow,"Movement","Forward"},{&down_arrow,"Movement","Backward"},{&strafe_left,"Movement","Strafe Left"},{&strafe_right,"Movement","Strafe Right"},{&action_key,"Shot","Shot" },{&aux_key,"Switch auto-move","Change auto-move sense"},{ &auto_shot,"Continuous shot","Auto-Shot" },{ &auto_move,"Continuous move","Auto-Move" },{NULL}};
-episoade_pack Rooms={Rooms_ep,Rooms_desc,Rooms_keys,NULL,NULL,kongregate,"rooms"};//,128553
+episoade_pack Rooms={Rooms_ep,Rooms_desc,Rooms_keys,Rooms_touch,NULL,kongregate,"rooms"};//,128553
 //
 #define Road_ep "Road"
 ep_keys Road_keys[]={{&left_arrow,"Rotation","Rotate Left"},{&right_arrow,"Rotation","Rotate Right"},{&action_key,"Shot","Shot" },{&strafe_left,"Movement","Strafe Left"},{&strafe_right,"Movement","Strafe Right"},{ &auto_shot,"Continuous shot","Auto-Shot" },{NULL}};
@@ -165,7 +166,7 @@ episoade_pack Mahjong = { "Mahjong","Mahjong is a puzzle game. Match all the til
 //ep_keys Test_keys[]={{&left_arrow,"Movement","Left Direction"},{&right_arrow,"Movement","Right Direction"},{&up_arrow,"Movement","Up Direction"},{&down_arrow,"Movement","Down Direction"},{&strafe_left,"Rotate Left","Strafe Left"},{&strafe_right,"Rotate Right","Strafe Right"},{&action_key,"Create a Sprite","Primary Action"},{&aux_key,"Reset Rotation","Secondary Action"},{&auto_shot,"Colorize","Auto-Shot"},{&auto_move,"Rotate Continuously","Auto-Move"},{NULL}};
 //episoade_pack Test = { "Test","A simple test.",Test_keys,"Resolve Sprite",NULL,flashixy};
 #define Chambers_ep "Chambers"
-episoade_pack Chambers={Chambers_ep,Rooms_desc,Rooms_keys,NULL,NULL,flashixy};// on 25-mai-2026 first score in firestore
+episoade_pack Chambers={Chambers_ep,Rooms_desc,Rooms_keys,Rooms_touch,NULL,flashixy};// on 25-may-2026 first score in firestore
 //
 episoade_pack* episoade[]={&Universe,&Ores_for_Ship,&Driving_the_Ship,&Planet_Landing,&Rocks_Fall,&Balls_Play,&Asteroids,&Cubes,&Moving_Forward,&Jump,&On_the_Rail,&Space_Trip,&Space_Zones,&Rooms,&Road,&Racecourse,&Card_Flip,&Treasure_Finder,&Fruit_Cocktail,&Naval_War,&Turret_Defence,&Ball_Hit,&Lotto,&Roulette,&Mahjong,&Chambers};
 
