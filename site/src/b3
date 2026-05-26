@@ -25,13 +25,18 @@
 
   window.submitScore = async function(name, score) {
     const ref = doc(db, "plays", "plays");
-    await updateDoc( ref,
+    await updateDoc( ref,//must be initialized
       {
          [name]: increment(1)
       }
     ); //setDoc will replace all document if not with ,{ merge : true }
     if (ins) {
         await setDoc(nameRef, {
+          score: score
+        });
+    } else {
+        const ref = doc(db, "Chambers", "a");//this can't be an overwrite, normal ids are 28 characters
+        await updateDoc( ref, {//must be initialized
           score: score
         });
     }
