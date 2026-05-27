@@ -2,12 +2,12 @@ name: Sync plays.txt from artifact and release
 
 on:
  workflow_dispatch:
+  inputs:
+   maxdif:
+    description: "max difference"
  schedule:
   - cron: '0 0 * * *'
     timezone: 'Europe/Bucharest'
-inputs:
- maxdif:
-  description: "max difference"
 
 jobs:
  sync:
