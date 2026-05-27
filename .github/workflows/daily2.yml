@@ -5,6 +5,9 @@ on:
  schedule:
   - cron: '0 0 * * *'
     timezone: 'Europe/Bucharest'
+ inputs:
+  maxdif:
+   description: "max difference"
 
 jobs:
  sync:
@@ -72,11 +75,15 @@ jobs:
       fi
 
       echo "Checking value ranges..."
+      if [ -z "${{ inputs.maxdif }}" ]; then
+       z=300
+      else
+       z=${{ inputs.maxdif }}
+      fi
       for i in "${!release_arr[@]}"; do
        r=${release_arr[$i]}
        a=${artifact_arr[$i]}
 
-       z=300
        echo "Index $i -> release=$r artifact=$a allowed=[${r},$((r+z-1))]"
 
        if (( a < r || a >= r + z )); then
