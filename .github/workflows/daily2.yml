@@ -5,9 +5,9 @@ on:
  schedule:
   - cron: '0 0 * * *'
     timezone: 'Europe/Bucharest'
- inputs:
-  maxdif:
-   description: "max difference"
+inputs:
+ maxdif:
+  description: "max difference"
 
 jobs:
  sync:
