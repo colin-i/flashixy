@@ -23,22 +23,28 @@
 
 <!-- -->
 
-  window.submitScore = async function(name, score) {
+  window.addPlay = async function(name) {
     const ref = doc(db, "plays", "plays");
     await updateDoc( ref,//must be initialized
       {
          [name]: increment(1)
       }
     ); //setDoc will replace all document if not with ,{ merge : true }
-    if (ins) {
+  };
+  window.submitScore = async function(name, score) {
+    try{
+      if (ins) {
         await setDoc(nameRef, {
           score: score
         });
-    } else {
-        const ref = doc(db, "Chambers", "a");//this can't be an overwrite, normal ids are 28 characters
+      } else {
+        const ref = doc(db, name, "a");//this can't be an overwrite, normal ids are 28 characters
         await updateDoc( ref, {//must be initialized
           score: score
         });
+      }
+    } catch (e) {//errors are normal since here only the highscore can go through
+      console.error(e);
     }
   };
   onAuthStateChanged(auth, async (user) => {//this will fire at least once

@@ -329,7 +329,7 @@ int main(int argc,char**argv){
 			}
 		)";
 		start_scenario_ante="if(nm){";
-		start_scenario_post="}else homeAgain();";
+		start_scenario_post="flash.external.ExternalInterface.call('addPlay',singleTraining[pos]);}else homeAgain();";
 		list_loaded=R"(
 			if(link_id)attachMovie('get_url','get_url',getNextHighestDepth());
 		)";
