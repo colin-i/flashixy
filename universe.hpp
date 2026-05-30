@@ -82,8 +82,6 @@ typedef struct episooade_struct
     char* description;
     ep_keys* episod_chei;
     char*mousePress;
-//	int id_stat;
-//int id=0;
 	char*id;
 	char base;
 	char*designation;
@@ -91,54 +89,54 @@ typedef struct episooade_struct
 }episoade_pack;
 
 ep_keys Universe_keys[]={{NULL}};//straight {{NULL}} will not work
-episoade_pack Universe={"Universe","Multiple games.",Universe_keys,NULL,"universe",kongregate};
+episoade_pack Universe={"Universe","Multiple games.",Universe_keys,NULL,"universe",kongregate,"Universe"};
 //
 #define Ores_for_Ship_ep "Ores_for_Ship"
 ep_keys Ores_for_Ship_keys[]={{&left_arrow,"Movement","Left Direction"},{&right_arrow,"Movement","Right Direction"},{&up_arrow,"Movement","Up Direction"},{&down_arrow,"Movement","Down Direction"},{NULL}};
-episoade_pack Ores_for_Ship={Ores_for_Ship_ep,"Gather all the required minerals.",Ores_for_Ship_keys,NULL,"digger",kongregate};//,128541 ,5706
+episoade_pack Ores_for_Ship={Ores_for_Ship_ep,"Gather all the required minerals.",Ores_for_Ship_keys,NULL,"digger",kongregate,"Digger"};//,128541 ,5706
 //
 #define Driving_the_Ship_ep "Driving_the_Ship"
 ep_keys Driving_the_Ship_keys[]={{&left_arrow,"Movement","Left Direction" },{&right_arrow,"Movement","Right Direction" },{&up_arrow,"Movement","Up Direction" },{&down_arrow,"Movement","Down Direction" },{NULL}};
-episoade_pack Driving_the_Ship = { Driving_the_Ship_ep,"Pass through the blue clouds and bonuses. Bonuses: Green = cloud to ship; Blue = free taker; Yellow = cable taker; Red = shield.",Driving_the_Ship_keys,NULL,"driver",kongregate};//,128542
+episoade_pack Driving_the_Ship = { Driving_the_Ship_ep,"Pass through the blue clouds and bonuses. Bonuses: Green = cloud to ship; Blue = free taker; Yellow = cable taker; Red = shield.",Driving_the_Ship_keys,NULL,"driver",kongregate,"Driver"};//,128542
 //
 #define Planet_Landing_ep "Planet_Landing"
 ep_keys Planet_Landing_keys[]={{&left_arrow,"Movement","Left Direction" },{&right_arrow,"Movement","Right Direction" },{&down_arrow,"Movement","Down Direction" },{NULL}};
-episoade_pack Planet_Landing={Planet_Landing_ep,"Pass through the obstacles and land on the planet.",Planet_Landing_keys,NULL,"lander",kongregate};//,128543
+episoade_pack Planet_Landing={Planet_Landing_ep,"Pass through the obstacles and land on the planet.",Planet_Landing_keys,NULL,"lander",kongregate,"Lander"};//,128543
 //
 #define Rocks_Fall_ep "Rocks_Fall"
 ep_keys Rocks_Fall_keys[]={{&left_arrow,"Movement","Left Direction" },{&right_arrow,"Movement","Right Direction" },{&up_arrow,"Move gun","Gun Up Direction"},{&down_arrow,"Move gun","Gun Down Direction"},{&action_key,"Shot","Shot"},{&aux_key,"Reset gun position","Reset gun position" },{ &auto_shot,"Continuous shot","Auto-Shot" },{ &auto_move,"Continuous right","Auto-Move" },{NULL}};
-episoade_pack Rocks_Fall={Rocks_Fall_ep,"Pass through the obstacles.",Rocks_Fall_keys,NULL,"expeditioner",kongregate};//,128544
+episoade_pack Rocks_Fall={Rocks_Fall_ep,"Pass through the obstacles.",Rocks_Fall_keys,NULL,"expeditioner",kongregate,"Expeditioner"};//,128544
 //
 #define Balls_Play_ep "Balls_Play"
 ep_keys Balls_Play_keys[]={{&left_arrow,"Movement","Left Direction" },{&right_arrow,"Movement","Right Direction" },{&action_key,"Launch circle","Launch circle" },{&aux_key,"Move slower (pressing)","Move slower (pressing)" },{NULL}};
-episoade_pack Balls_Play={Balls_Play_ep,"The field circles must hit the galaxy. The field circles must not hit the defender and must hit the line behind the defender.",Balls_Play_keys,NULL,"balls",kongregate};//,128545
+episoade_pack Balls_Play={Balls_Play_ep,"The field circles must hit the galaxy. The field circles must not hit the defender and must hit the line behind the defender.",Balls_Play_keys,NULL,"balls",kongregate,"Balls"};//,128545
 //
 #define Asteroids_ep "Asteroids"
 ep_keys Asteroids_keys[]={{&left_arrow,"Movement","Rotate Left" },{&right_arrow,"Movement","Rotate Right" },{&up_arrow,"Movement","Forward" },{&down_arrow,"Movement","Backward" },{&action_key,"Shot","Shot"},{ &auto_shot,"Continuous shot","Auto-Shot" },{NULL}};
-episoade_pack Asteroids={Asteroids_ep,"Shot the asteroids. There are four types of bonuses and a progress bar.",Asteroids_keys,NULL,"asteroids",kongregate};//,128546
+episoade_pack Asteroids={Asteroids_ep,"Shot the asteroids. There are four types of bonuses and a progress bar.",Asteroids_keys,NULL,"asteroids",kongregate,"Asteroids"};//,128546
 //
 ep_keys Cubes_keys[]={{&left_arrow,"Movement","Left Direction" },{&right_arrow,"Movement","Right Direction" },{&down_arrow,"Cube fall","Cube fall" },{NULL}};
 episoade_pack Cubes={"Cubes","Match the cubes. A match is formed by three cubes or more placed one after another horizontally or vertically. Hold Left/Right to move faster.",Cubes_keys,NULL,NULL,kongregate,"cubes"};//,128548
 //
 #define Moving_Forward_ep "Moving_Forward"
 ep_keys Moving_Forward_keys[]={{&left_arrow,"Movement","Left Direction" },{&right_arrow,"Movement","Right Direction" },{NULL}};
-episoade_pack Moving_Forward={Moving_Forward_ep,"Pass through the obstacles.",Moving_Forward_keys,NULL,"watersport",kongregate};//,128547
+episoade_pack Moving_Forward={Moving_Forward_ep,"Pass through the obstacles.",Moving_Forward_keys,NULL,"watersport",kongregate,"Watersport"};//,128547
 //
 #define Jump_ep "Jump"
 ep_keys Jump_keys[]={{&left_arrow,"Movement","Left Direction" },{&right_arrow,"Movement","Right Direction" },{&action_key,"Jump","Jump" },{NULL}};
-episoade_pack Jump={Jump_ep,"Reach the top of the zones.",Jump_keys,NULL,"jump",kongregate};//,128549
+episoade_pack Jump={Jump_ep,"Reach the top of the zones.",Jump_keys,NULL,"jump",kongregate,"Jump"};//,128549
 //
 #define On_the_Rail_ep "On_the_Rail"
 ep_keys On_the_Rail_keys[]={{&left_arrow,"Rotation","Rotate Left" },{&right_arrow,"Rotation","Rotate Right"},{&action_key,"Shot","Shot" },{&aux_key,"Move faster (pressing)","Move faster (pressing)" },{ &auto_shot,"Continuous shot","Auto-Shot" },{NULL}};
-episoade_pack On_the_Rail={On_the_Rail_ep,"Shot all the targets.",On_the_Rail_keys,NULL,"train",kongregate};//,128550
+episoade_pack On_the_Rail={On_the_Rail_ep,"Shot all the targets.",On_the_Rail_keys,NULL,"train",kongregate,"Train"};//,128550
 //
 #define Space_Trip_ep "Space_Trip"
 ep_keys Space_Trip_keys[]={{&up_arrow,"Movement","Up Direction"},{&down_arrow,"Movement","Down Direction"},{&action_key,"Shot","Shot" },{ &auto_shot,"Continuous shot","Auto-Shot" },{NULL}};
-episoade_pack Space_Trip={Space_Trip_ep,"Pass through the obstacles.",Space_Trip_keys,NULL,"voyage",kongregate};//,128551
+episoade_pack Space_Trip={Space_Trip_ep,"Pass through the obstacles.",Space_Trip_keys,NULL,"voyage",kongregate,"Voyage"};//,128551
 //
 #define Space_Zones_ep "Space_Zones"
 ep_keys Space_Zones_keys[]={{&left_arrow,"Rotation","Rotate Left"},{&right_arrow,"Rotation","Rotate Right"},{&up_arrow,"Movement","Forward"},{&down_arrow,"Movement","Backward"},{&action_key,"Shot","Shot" },{&aux_key,"Rotate slower (pressing)","Rotate slower (pressing)" },{ &auto_shot,"Continuous shot","Auto-Shot" },{NULL}};
-episoade_pack Space_Zones={Space_Zones_ep,"Reach the end platforms, dispose of the enemies, shot all the targets or avoid the enemies.",Space_Zones_keys,NULL,"space-adventure",kongregate};//,128552
+episoade_pack Space_Zones={Space_Zones_ep,"Reach the end platforms, dispose of the enemies, shot all the targets or avoid the enemies.",Space_Zones_keys,NULL,"space-adventure",kongregate,"Space Adventure"};//,128552
 //
 #define Rooms_ep "Rooms"
 #define Rooms_desc "Shot all the ships."
@@ -148,7 +146,7 @@ episoade_pack Rooms={Rooms_ep,Rooms_desc,Rooms_keys,Rooms_touch,NULL,kongregate,
 //
 #define Road_ep "Road"
 ep_keys Road_keys[]={{&left_arrow,"Rotation","Rotate Left"},{&right_arrow,"Rotation","Rotate Right"},{&action_key,"Shot","Shot" },{&strafe_left,"Movement","Strafe Left"},{&strafe_right,"Movement","Strafe Right"},{ &auto_shot,"Continuous shot","Auto-Shot" },{NULL}};
-episoade_pack Road={Road_ep,"Follow the road until the last zone.",Road_keys,NULL,"road",kongregate};//,128554
+episoade_pack Road={Road_ep,"Follow the road until the last zone.",Road_keys,NULL,"road",kongregate,"Road"};//,128554
 //
 episoade_pack Racecourse={"Racecourse","A chance-dependent game with running horses. Choose a horse before the race starts.",NULL,"Choose Horse",NULL,kongregate,"racecourse"};//,128511
 episoade_pack Card_Flip={"Card_Flip","Flip the cards and find the same ones.",NULL,"Choose Card",NULL,kongregate,"card-flip"};//,128512
@@ -161,7 +159,7 @@ episoade_pack Lotto= { "Lotto","Lotto is a chance game with 5 numbers selected f
 episoade_pack Roulette= { "Roulette","Roulette is a casino game. The luck plays an important role to obtain a good score.",NULL,"Start Power/Spin",NULL,kongregate,"roulette"};//,130137
 //
 ep_keys Mahjong_keys[]={{&action_key,"Undo","Special Undo" },{NULL}};
-episoade_pack Mahjong = { "Mahjong","Mahjong is a puzzle game. Match all the tiles.",Mahjong_keys,"Select Tile","mahjong",kongregate};//,131988
+episoade_pack Mahjong = { "Mahjong","Mahjong is a puzzle game. Match all the tiles.",Mahjong_keys,"Select Tile","mahjong",kongregate,"Mahjong"};//,131988
 //
 //ep_keys Test_keys[]={{&left_arrow,"Movement","Left Direction"},{&right_arrow,"Movement","Right Direction"},{&up_arrow,"Movement","Up Direction"},{&down_arrow,"Movement","Down Direction"},{&strafe_left,"Rotate Left","Strafe Left"},{&strafe_right,"Rotate Right","Strafe Right"},{&action_key,"Create a Sprite","Primary Action"},{&aux_key,"Reset Rotation","Secondary Action"},{&auto_shot,"Colorize","Auto-Shot"},{&auto_move,"Rotate Continuously","Auto-Move"},{NULL}};
 //episoade_pack Test = { "Test","A simple test.",Test_keys,"Resolve Sprite",NULL,flashixy};

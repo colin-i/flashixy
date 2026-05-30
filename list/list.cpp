@@ -27,10 +27,22 @@ static int locatia_a_doua(){
 	}
 	return i;
 }*/
+static char strip_temp[100];
+static char *strip(const char *p)
+{
+	char *out = strip_temp;
+	while (*p) {// && out < strip_temp + sizeof(strip_temp) - 1) {
+		*out++ = (*p == '_') ? ' ' : *p;
+		p++;
+	}
+	*out = '\0';
+	return strip_temp;
+}
 
 bool is_flashixy;
-void add_ep(int iteratar,episoade_pack*ep){
-	actionf(buf,"_root['singleTraining'][%u]='%s'", iteratar,ep->name);
+static void add_ep(int iteratar,episoade_pack*ep){
+	char*nm=!is_flashixy?iteratar,ep->name:(!ep->id?strip(ep->name):ep->designation);
+	actionf(buf,"_root['singleTraining'][%u]='%s'", iteratar,nm);
 	actionf(buf,"_root['singleTraining_desc'][%u]='%s'", iteratar,ep->description);
 	actionf(buf,"_root['singleTraining_dispKey'][%u]=new Array();_root['singleTraining_descKey'][%u]=new Array()", iteratar, iteratar);
 	ep_keys* ep_k=ep->episod_chei;
@@ -44,7 +56,10 @@ void add_ep(int iteratar,episoade_pack*ep){
 	char*mousePressDesc=ep->mousePress;
 	if(mousePressDesc!=NULL)actionf(buf,"_root['singleTraining_mouse'][%u]='%s'", iteratar,mousePressDesc);
 	if(is_flashixy){
-		actionf(buf, "_root['singleTraining_ids'][%u]='%s'", iteratar,ep->id!=NULL?ep->id:(ep->base==kongregate?ep->designation:""));
+		char*a=ep->id!=NULL?ep->id:(ep->base==kongregate?ep->designation:NULL);
+		if(a){
+			actionf(buf, "_root['singleTraining_ids'][%u]='%s'",iteratar,a);
+		}
 	}
 	//actionf(buf, "_root['singleTraining_stat'][%u]='%u'", numarulEpisodului, ep->id_stat);
 	//actionf(buf, "_root['singleTraining_%s'][%u]='%u'", pop,numarulEpisodului, ep->idpop);

@@ -301,9 +301,17 @@ int main(int argc,char**argv){
 	char f4[]=";txt_inf.setTextFormat(fmt);}";
 	char color1buf[sizeof(f1)-1+6+sizeof(f2)-1+sizeof(stable_sort[2])-1+sizeof(f3)-1+maxuint+sizeof(f4)-1+1];
 	//char*desc_height;
+	char*under1;char*under2;
 
 	if(!is_flashixy){
 		load_extern="";start_scenario_ante="";start_scenario_post="";list_loaded="";location_mark="";//desc_height="";
+		action(R"(
+			function strip_underscores(txt){
+				var splitAr=txt.split('_');
+				return splitAr.join(' ');
+			}
+		)");
+		under1="_root.strip_underscores(";under2=")";
 	}else{
 		presprite=swf_sprite_new();
 		action_sprite(presprite,R"(
@@ -336,6 +344,7 @@ int main(int argc,char**argv){
 		sprintf(color1buf,"%s%x%s%s%s%u%s",f1,color1,f2,stable_sort[2],f3,text_height,f4);location_mark=color1buf;
 
 		//desc_height="if(_root.singleTraining_mouse[pos])desc_hg-=oneLine_h;";
+		under1="";under2="";
 	}
 	actionf(buf,R"(
 		//url
@@ -471,10 +480,6 @@ int main(int argc,char**argv){
 			game.attachMovie('scenario_info','scenario_info',game.getNextHighestDepth());
 			game.scenario_info['pos']=pos;
 		}else start_scenario(pos);
-        }
-        function strip_underscores(txt){
-            var splitAr=txt.split('_');
-            return splitAr.join(' ');
         }
 	)");
 	action(R"(
@@ -702,7 +707,7 @@ int main(int argc,char**argv){
 	actionf_sprite(presprite,buf,R"(
         var total_h=0;var mc;
         //
-        add_mc_top(_root.strip_underscores(_root.singleTraining[pos]),oneLine_h);
+        add_mc_top(%s_root.singleTraining[pos]%s,oneLine_h);
         //
 	var dispKey=_root.singleTraining_dispKey[pos];
 		//A positive integer that specifies the height of the new text field. oneLine_h=40
@@ -742,7 +747,7 @@ int main(int argc,char**argv){
         total_h+=oneLine_h;
         //
         _y=(height-total_h)/2;
-    )",mouse_disp_name);//,desc_height
+    )",under1,under2,mouse_disp_name);//,desc_height
     swf_sprite_showframe(presprite);
     sprite=swf_sprite_done(presprite);swf_exports_add(sprite,"scenario_info");
     //info_button
@@ -886,7 +891,7 @@ int main(int argc,char**argv){
     #define rest_x list_unit_w-text_x
     int list_txt=swf_text(rest_x,list_unit_h,"message",(HasFont|ReadOnly|NoSelect),&ed);
     swf_sprite_placeobject_coords(presprite,list_txt,0,text_x,0);
-    action_sprite(presprite,"message=_root.strip_underscores(_name)");
+	actionf_sprite(presprite,buf,"message=%s_name%s",under1,under2);
     swf_sprite_showframe(presprite);
     sprite=swf_sprite_done(presprite);swf_exports_add(sprite,"list_entry");
     //list_entry_play
