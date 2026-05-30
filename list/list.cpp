@@ -135,10 +135,10 @@ int main(int argc,char**argv){
 	)";
 	char*s0;char*ffirst;char*flast;
 	if(!is_flashixy){
-		s0=sorts[0];
-		ffirst=sorts_new;
+		s0=sorts1[0];
+		ffirst=sorts_chron;
 		buf2[0]='\0';
-		flast=sorts_chron;
+		flast=sorts_new;
 	}else{
 		s0=sorts2[0];
 		ffirst=sorts_play;

@@ -1067,7 +1067,7 @@ int main(int argc,char**argv){
     )");
     //sort
     #define sort_h list_unit_h
-	int sort_w=list_unit_w/(!is_flashixy?sorts_length:sorts2_length);
+	int sort_w=list_unit_w/(!is_flashixy?sorts1_length:sorts2_length);
     //
     presprite=swf_sprite_new();
 	action_sprite(presprite, R"(
@@ -1110,9 +1110,9 @@ int main(int argc,char**argv){
     sprite=swf_sprite_done(presprite);swf_exports_add(sprite,"list_sort");
     //put container then sorters above, to draw sorter over list
     action_sprite(list_view_presprite,"createEmptyMovieClip('container',getNextHighestDepth())");
-	for(int i=0;i<(!is_flashixy?sorts_length:sorts2_length);i++){
+	for(int i=0;i<(!is_flashixy?sorts1_length:sorts2_length);i++){
 		actionf_sprite(list_view_presprite,buf,"var mov=attachMovie('list_sort','%s',getNextHighestDepth());mov['coef']=%u", \
-			!is_flashixy?sorts[i]:sorts2[i],i);
+			!is_flashixy?sorts1[i]:sorts2[i],i);
 	}
     //
 	action_sprite(list_view_presprite,R"(
@@ -1133,7 +1133,7 @@ int main(int argc,char**argv){
 		}
 		//if(sharlistSort.data.timeout==undefined)sharlistSort.data['timeout']=9;
 		//timeout apare ciudat in fisierul sol, dar e corect
-	)",!is_flashixy?sorts[0]:sorts2[0]);
+	)",!is_flashixy?sorts1[0]:sorts2[0]);
 
 	action("var start_time");
 

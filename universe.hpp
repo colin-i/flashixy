@@ -245,8 +245,8 @@ char*stable_sort[sorts_stable_length]={"Chronology","Newness","Plays"};//Compile
 //#define rat_user rat "_user"
 //#define scor_bazic_string "'0'"
 
-#define sorts_length 2
-char* sorts[sorts_length]={stable_sort[1],stable_sort[0]}; // 4 "Location","Plays" // e la limita Chronology in web unde e mai mare decat in desktop
+#define sorts1_length 2
+char* sorts1[sorts1_length]={stable_sort[0],stable_sort[1]}; // 4 "Location","Plays" // e la limita Chronology in web unde e mai mare decat in desktop
 
 #define sorts2_length sorts_stable_length
 char* sorts2[sorts2_length]={stable_sort[2],stable_sort[0],stable_sort[1]};
