@@ -33,7 +33,7 @@
   window.changeName = async function () {
     const span = document.getElementById("nameError");
     span.textContent = "";
-    let name = document.getElementById("name").value.trim();
+    const name = document.getElementById("name").value.trim();
     try {
       const oldName = await get_name();
       await runTransaction(db, async (transaction) => {//must be in transaction to avoid multiple users same call

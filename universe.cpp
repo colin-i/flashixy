@@ -295,10 +295,10 @@ int main(int argc,char**argv){
 	int color1=0xFF0000;
 	int color2=0x11aa11;//green//mai inchis ca nu se vede
 	char f1[]="xPos-=button_w;if(_root.singleTraining_ids[pos])draw_check(xPos,0x";
-	char f2[]=");if(_root.sharlistSort.data['value']=='";
+	char f2[]=");";//if(_root.sharlistSort.data['value']=='
 	//100 aici vine cam de 7+ cifre
-	char f3[]="'){createTextField('txt_inf',getNextHighestDepth(),xPos-100,0,100,list_unit_h);txt_inf.text=_root.sorter_play[pos];var fmt=new TextFormat();fmt.align='right';fmt.size=";
-	char f4[]=";txt_inf.setTextFormat(fmt);}";
+	char f3[]="createTextField('txt_inf',getNextHighestDepth(),xPos-100,0,100,list_unit_h);txt_inf.text=_root.sorter_play[pos];var fmt=new TextFormat();fmt.align='right';fmt.size=";//'){
+	char f4[]=";txt_inf.setTextFormat(fmt);";//}
 	char color1buf[sizeof(f1)-1+6+sizeof(f2)-1+sizeof(stable_sort[2])-1+sizeof(f3)-1+maxuint+sizeof(f4)-1+1];
 	//char*desc_height;
 	char*under1;char*under2;
@@ -341,7 +341,7 @@ int main(int argc,char**argv){
 		list_loaded=R"(
 			if(link_id)attachMovie('get_url','get_url',getNextHighestDepth());
 		)";
-		sprintf(color1buf,"%s%x%s%s%s%u%s",f1,color1,f2,stable_sort[2],f3,text_height,f4);location_mark=color1buf;
+		sprintf(color1buf,"%s%x%s%s%u%s",f1,color1,f2,f3,text_height,f4);location_mark=color1buf;//%s,stable_sort[2]
 
 		//desc_height="if(_root.singleTraining_mouse[pos])desc_hg-=oneLine_h;";
 		under1="";under2="";
