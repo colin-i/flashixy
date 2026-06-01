@@ -843,6 +843,7 @@ int main(int argc,char**argv){
 
 			mc['pos']=i;
 			mc.onPress=function(){
+				_root.holder.removeMovieClip();
 				_root.start_training(this.pos);
 			}
 
@@ -913,7 +914,10 @@ int main(int argc,char**argv){
 				var mcl=new MovieClipLoader();
 				//var listener=new Object();
 				//var t=this;
+
 				var mc=_root.createEmptyMovieClip('holder',_root.last_depth);
+				//if inside game, remember about removeMovieClip
+
 				//listener.onLoadInit=function(mc){//e prea tarziu pentru x/y/_visible aici, e deja pe ecran
 				mc._x=%u;//-mc._width;
 				//	mc._y=%%u-mc._height;
