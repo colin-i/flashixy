@@ -914,16 +914,16 @@ int main(int argc,char**argv){
 				var listener=new Object();
 				var wd=_root._width;
 				var t=this;
+				_root.createEmptyMovieClip('holder',_root.last_depth);
 				listener.onLoadInit=function(mc){
-					mc._y=_root._height-mc._height;
 					mc._x=wd-mc._width;
+					mc._y=_root._height-mc._height;
 					var b=mc.getBounds(t);
 					if(b.yMin<0)mc._y=0;
 				}
 				mcl.addListener(listener);
-				var mc=_root.createEmptyMovieClip('holder',_root.last_depth);
-				mc._x=wd;//chatgpt recommendation, else is too late to set x/y/_visible
-				mcl.loadClip(_name+'.jpg',mc);
+				_root.holder._x=wd;//chatgpt recommendation, else is too late to set x/y/_visible
+				mcl.loadClip(_name+'.jpg',_root.holder);
 				//https://flashixy.com/
 			}
 		}
