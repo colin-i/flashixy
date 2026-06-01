@@ -912,22 +912,18 @@ int main(int argc,char**argv){
 		onRollOver=function(){
 			if(_root.bar.is_pimg){
 				var mcl=new MovieClipLoader();
-				//var listener=new Object();
-				//var t=this;
-
-				var mc=_root.createEmptyMovieClip('holder',_root.last_depth);
+				_root.createEmptyMovieClip('holder',_root.last_depth);
 				//if inside game, remember about removeMovieClip
 
-				//listener.onLoadInit=function(mc){//e prea tarziu pentru x/y/_visible aici, e deja pe ecran
-				mc._x=%u;//-mc._width;
-				//	mc._y=%%u-mc._height;
 				var b=getBounds(_root);
-				//	var b=mc.getBounds(t);
-				if(b.yMin<%u)mc._y=%u;
-				//	if(b.yMin<0)mc._y=0;
-				//}
-				//mcl.addListener(listener);
-				//_root.holder._x=%%u;//chatgpt recommendation, else is too late to set x/y/_visible
+
+				var listener=new Object();
+				listener.onLoadComplete=function(mc){
+					mc._x=_root._width-mc._width;
+					if(b.yMin<%u)mc._y=_root._height-mc._height;
+				}
+				mcl.addListener(listener);
+
 				mcl.loadClip(_name+'.jpg',_root.holder);
 				//https://flashixy.com/
 			}
@@ -935,7 +931,7 @@ int main(int argc,char**argv){
 		onRollOut=function(){
 			if(_root.bar.is_pimg)_root.holder.removeMovieClip();
 		}
-	)",width_nr-400,height-300,height-300);//width_nr,height,width_nr);
+	)",height/2);
     swf_sprite_showframe(presprite);
     sprite=swf_sprite_done(presprite);swf_exports_add(sprite,"list_entry");
     //list_entry_play
