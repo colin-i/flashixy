@@ -27,7 +27,7 @@ static int locatia_a_doua(){
 	}
 	return i;
 }*/
-static char strip_temp[100];
+/*static char strip_temp[100];
 static char *strip(const char *p)
 {
 	char *out = strip_temp;
@@ -37,11 +37,11 @@ static char *strip(const char *p)
 	}
 	*out = '\0';
 	return strip_temp;
-}
+}*/
 
 bool is_flashixy;
 static void add_ep(int iteratar,episoade_pack*ep){
-	char*nm=!is_flashixy?iteratar,ep->name:(!ep->id?strip(ep->name):ep->designation);
+	char*nm=!is_flashixy?iteratar,ep->name:(!ep->id?ep->name:ep->designation);//strip(ep->name)
 	actionf(buf,"_root['singleTraining'][%u]='%s'", iteratar,nm);
 	actionf(buf,"_root['singleTraining_desc'][%u]='%s'", iteratar,ep->description);
 	actionf(buf,"_root['singleTraining_dispKey'][%u]=new Array();_root['singleTraining_descKey'][%u]=new Array()", iteratar, iteratar);

@@ -136,7 +136,7 @@ episoade_pack Space_Trip={Space_Trip_ep,"Pass through the obstacles.",Space_Trip
 //
 #define Space_Zones_ep "Space_Zones"
 ep_keys Space_Zones_keys[]={{&left_arrow,"Rotation","Rotate Left"},{&right_arrow,"Rotation","Rotate Right"},{&up_arrow,"Movement","Forward"},{&down_arrow,"Movement","Backward"},{&action_key,"Shot","Shot" },{&aux_key,"Rotate slower (pressing)","Rotate slower (pressing)" },{ &auto_shot,"Continuous shot","Auto-Shot" },{NULL}};
-episoade_pack Space_Zones={Space_Zones_ep,"Reach the end platforms, dispose of the enemies, shot all the targets or avoid the enemies.",Space_Zones_keys,NULL,"space-adventure",kongregate,"Space Adventure"};//,128552
+episoade_pack Space_Zones={Space_Zones_ep,"Reach the end platforms, dispose of the enemies, shot all the targets or avoid the enemies.",Space_Zones_keys,NULL,"space-adventure",kongregate,"Space_Adventure"};//,128552
 //
 #define Rooms_ep "Rooms"
 #define Rooms_desc "Shot all the ships."

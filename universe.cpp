@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-//SharedObject: keys levelIsDone listSort music showIntro
+//SharedObject: keys levelIsDone listSort music showIntro showImg
 
 int main(int argc,char**argv){
 //rooted_swf_path("universe") "test/universe.swf"
@@ -34,11 +34,6 @@ int main(int argc,char**argv){
     int button_sz[2];
     dbl=swf_img_ex("../tmp/root/root.dbl",button_sz);
     swf_exports_add(dbl,"bar_home");
-	//intro
-	dbl=swf_img("../tmp/root/intro.dbl");
-	swf_exports_add(dbl,"bar_intro");
-	dbl=swf_img("../tmp/root/intro_off.dbl");
-	swf_exports_add(dbl,"bar_intro_off");
     //sound
     dbl=swf_img("../tmp/root/sound.dbl");
     swf_exports_add(dbl,"bar_sound");
@@ -47,6 +42,16 @@ int main(int argc,char**argv){
     //keyboard
     dbl=swf_img("../tmp/root/keyboard.dbl");
     swf_exports_add(dbl,"bar_keyboard");
+	//intro
+	dbl=swf_img("../tmp/root/intro.dbl");
+	swf_exports_add(dbl,"bar_intro");
+	dbl=swf_img("../tmp/root/intro_off.dbl");
+	swf_exports_add(dbl,"bar_intro_off");
+	//img
+	dbl=swf_img("../tmp/root/pimg.dbl");
+	swf_exports_add(dbl,"bar_pimg");
+	dbl=swf_img("../tmp/root/pimg-off.dbl");
+	swf_exports_add(dbl,"bar_pimg_off");
     //
     int button_lat=button_sz[1];
 #define pointless_add 1
@@ -160,20 +165,29 @@ int main(int argc,char**argv){
 	)",(bar_x<bar_y?'x':'y'),bar_coord);
 	//calculations
 	int bar_startPos=bar_coord+button_lat*(1+pointless_add);
-	int bar_coord__atentie_la_counter=bar_startPos+button_lat;
+	bar_coord=bar_startPos+button_lat;
 	//intro
 	actionf_sprite(presprite,buf2,R"(
-	function extra_buttons_show(){
+	function intro_button_show(){
 		return bar_button('showIntro','intro','Intro',%u,this);
+	}
+	function img_button_show(){
+		return bar_button('showImg','pimg','Preview',%u,this);
+	}
+	function extra_buttons_show(){
+		intro_button_show();
+		img_button_show();
 	}
 	function extra_buttons_hide(){
 		intro.removeMovieClip();
+		pimg.removeMovieClip();
 	}
-	)",bar_coord__atentie_la_counter);
+	)",bar_coord,bar_coord+button_szAndInter);
 	action_sprite(presprite,buf);
 	action_sprite(presprite,R"(
 		//se putea si is_intro= in functie, ca acolo e set la nivel de movieclip, dar sa nu mai fie degeaba la celalalt show
-		var is_intro=extra_buttons_show();
+		var is_intro=intro_button_show();
+		var is_pimg=img_button_show();
 	)");
 
     action_sprite(presprite,"delete bmp;");
@@ -301,17 +315,11 @@ int main(int argc,char**argv){
 	char f4[]=";txt_inf.setTextFormat(fmt);";//}
 	char color1buf[sizeof(f1)-1+6+sizeof(f2)-1+sizeof(stable_sort[2])-1+sizeof(f3)-1+maxuint+sizeof(f4)-1+1];
 	//char*desc_height;
-	char*under1;char*under2;
+	//char*under1;char*under2;
 
 	if(!is_flashixy){
 		load_extern="";start_scenario_ante="";start_scenario_post="";list_loaded="";location_mark="";//desc_height="";
-		action(R"(
-			function strip_underscores(txt){
-				var splitAr=txt.split('_');
-				return splitAr.join(' ');
-			}
-		)");
-		under1="_root.strip_underscores(";under2=")";
+		//under1="_root.strip_underscores(";under2=")";
 	}else{
 		presprite=swf_sprite_new();
 		action_sprite(presprite,R"(
@@ -344,8 +352,14 @@ int main(int argc,char**argv){
 		sprintf(color1buf,"%s%x%s%s%u%s",f1,color1,f2,f3,text_height,f4);location_mark=color1buf;//%s,stable_sort[2]
 
 		//desc_height="if(_root.singleTraining_mouse[pos])desc_hg-=oneLine_h;";
-		under1="";under2="";
+		//under1="";under2="";
 	}
+	action(R"(
+		function strip_underscores(txt){
+			var splitAr=txt.split('_');
+			return splitAr.join(' ');
+		}
+	)");//is only because of _ images and swfs
 	actionf(buf,R"(
 		//url
 		function load_extern(pos,extension){
@@ -705,11 +719,11 @@ int main(int argc,char**argv){
 	#define infoText_h scenario_info_unit_h/2
 	actionf_sprite(presprite,buf,"var textHeight=%u",infoText_h);
 	actionf_sprite(presprite,buf,R"(
-        var total_h=0;var mc;
-        //
-        add_mc_top(%s_root.singleTraining[pos]%s,oneLine_h);
-        //
-	var dispKey=_root.singleTraining_dispKey[pos];
+		var total_h=0;var mc;
+		//
+		add_mc_top(_root.strip_underscores(_root.singleTraining[pos]),oneLine_h);
+		//
+		var dispKey=_root.singleTraining_dispKey[pos];
 		//A positive integer that specifies the height of the new text field. oneLine_h=40
         var desc_hg=oneLine_h*4;
 	//+(oneLine_h*3/4);
@@ -747,7 +761,7 @@ int main(int argc,char**argv){
         total_h+=oneLine_h;
         //
         _y=(height-total_h)/2;
-    )",under1,under2,mouse_disp_name);//,desc_height
+    )",mouse_disp_name);//,desc_height
     swf_sprite_showframe(presprite);
     sprite=swf_sprite_done(presprite);swf_exports_add(sprite,"scenario_info");
     //info_button
@@ -891,7 +905,33 @@ int main(int argc,char**argv){
     #define rest_x list_unit_w-text_x
     int list_txt=swf_text(rest_x,list_unit_h,"message",(HasFont|ReadOnly|NoSelect),&ed);
     swf_sprite_placeobject_coords(presprite,list_txt,0,text_x,0);
-	actionf_sprite(presprite,buf,"message=%s_name%s",under1,under2);
+	action_sprite(presprite,R"(
+		message=_root.strip_underscores(_name);
+
+		onRollOver=function(){
+			if(_root.bar.is_pimg){
+				var mcl=new MovieClipLoader();
+				var listener=new Object();
+				var wd=_root._width;var hg=_root._height;
+				var t=this;
+				listener.onLoadInit=function(mc){
+					mc._x=wd-mc._width;
+					mc._y=hg-mc._height;
+					var b=mc.getBounds(t);
+					if(b.yMin<0)mc._y=0;
+				}
+				mcl.addListener(listener);
+				var mc=_root.createEmptyMovieClip('holder',_root.last_depth);
+				mc._x=-10000;//chatgpt recommendation, else is too late to set x/y/_visible
+				mc._y=-10000;
+				mcl.loadClip(_name+'.jpg',mc);
+				//https://flashixy.com/
+			}
+		}
+		onRollOut=function(){
+			if(_root.bar.is_pimg)_root.holder.removeMovieClip();
+		}
+	)");
     swf_sprite_showframe(presprite);
     sprite=swf_sprite_done(presprite);swf_exports_add(sprite,"list_entry");
     //list_entry_play
@@ -1160,6 +1200,7 @@ int main(int argc,char**argv){
 	}
 	if (bar_y != 0)actionf(buf, "bar._y=%u", bar_y);
 	action("attachMovie('shared_level','shared_level',getNextHighestDepth())");
+	action("var last_depth=getNextHighestDepth()");
 
     swf_exports_done();
 	swf_showframe();
