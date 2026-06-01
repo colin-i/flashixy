@@ -905,24 +905,23 @@ int main(int argc,char**argv){
     #define rest_x list_unit_w-text_x
     int list_txt=swf_text(rest_x,list_unit_h,"message",(HasFont|ReadOnly|NoSelect),&ed);
     swf_sprite_placeobject_coords(presprite,list_txt,0,text_x,0);
-	action_sprite(presprite,R"(
+	actionf_sprite(presprite,buf,R"(
 		message=_root.strip_underscores(_name);
 
 		onRollOver=function(){
 			if(_root.bar.is_pimg){
 				var mcl=new MovieClipLoader();
 				var listener=new Object();
-				var wd=_root._width;
 				var t=this;
 				_root.createEmptyMovieClip('holder',_root.last_depth);
 				listener.onLoadInit=function(mc){
-					mc._x=wd-mc._width;
-					mc._y=_root._height-mc._height;
+					mc._x=%u-mc._width;
+					mc._y=%u-mc._height;
 					var b=mc.getBounds(t);
 					if(b.yMin<0)mc._y=0;
 				}
 				mcl.addListener(listener);
-				_root.holder._x=wd;//chatgpt recommendation, else is too late to set x/y/_visible
+				_root.holder._x=%u;//chatgpt recommendation, else is too late to set x/y/_visible
 				mcl.loadClip(_name+'.jpg',_root.holder);
 				//https://flashixy.com/
 			}
@@ -930,7 +929,7 @@ int main(int argc,char**argv){
 		onRollOut=function(){
 			if(_root.bar.is_pimg)_root.holder.removeMovieClip();
 		}
-	)");
+	)",width_nr,height,width_nr);
     swf_sprite_showframe(presprite);
     sprite=swf_sprite_done(presprite);swf_exports_add(sprite,"list_entry");
     //list_entry_play
