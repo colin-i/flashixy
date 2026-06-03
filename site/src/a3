@@ -1,6 +1,4 @@
 <script>
-document.getElementById("game").style.width = "100%";
-document.getElementById("game").style.height = "100%";
 <!-- -->
 window.onSwfReady = function() {
     return !window.matchMedia("(pointer: fine)").matches;

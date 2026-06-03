@@ -242,12 +242,13 @@ int main(int argc,char**argv){
             mc.endFill();
         }
     )");
-    actionf(buf,R"(
+
+	actionf(buf,R"(
         function counterBar_init(max_pos){
             var mc=bar.attachMovie('counterBar','counterBar',bar.getNextHighestDepth());
             mc._%s=%u;mc['barNr']=0;mc['barMax']=max_pos;
         }
-    )",(bar_x<bar_y?"x":"y"),bar_startPos);
+	)",(bar_x<bar_y?"x":"y"),bar_startPos);
 	actionf(buf,R"(
         function counterBar_step(){
 			counterBar_jump(1);
@@ -271,11 +272,15 @@ int main(int argc,char**argv){
 	}
 	function counterBar_jump(a){
             bar.counterBar.barNr+=a;
+
             if(bar.counterBar.barNr>=bar.counterBar.barMax)want_end();
 		//in cel mai rau caz la ruleta ar trasa in afara ecranului la end la ruleta
+		//aici pare extra la euniverse doar cu Chambers dar e povestea ca la asm e doar Less2 si practic e mai avantajos, asa ca nu mai fac artificii de calcul in alta parte
+
 		bar.counterBar.draw_progressBar();
         }
-    )",2*fps);
+	)",2*fps);
+
 	action(R"(
         function draw_list_entry(mc,wd,hg){
             draw_list_entry_ex(mc,wd,hg,0x0000ff);
@@ -799,11 +804,14 @@ int main(int argc,char**argv){
             beginFill(0x00ffFF);
             moveTo(%s,%s);
             lineTo(%u,%s);//_root.bar._width aici nu am mai stat sa modific, e de la pointless, nici la pointless nu e in functie de care e mai mare
-            lineTo(%u,_root.bar._height);//_root.bar._width
-            lineTo(%s,_root.bar._height);
+            lineTo(%u,%u);//_root.bar._width
+            lineTo(%s,%u);//_root.bar._height
             endFill();
         }
-    )",cp_0,_0_cp,bar_w,_0_cp,bar_w,cp_0);
+    )",cp_0,_0_cp\
+	,bar_w,_0_cp
+	,bar_w,height-bar_startPos\
+	,cp_0,height-bar_startPos);
     actionf_sprite(presprite,buf,"var bar_sz=%u",bar_sz);
 	action_sprite(presprite,"draw_progressBar()");
     swf_sprite_showframe(presprite);

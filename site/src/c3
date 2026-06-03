@@ -1,3 +1,4 @@
+document.getElementById("game").style="width: 100%; height: 100%";
 kongregateAPI.loadAPI(function () {
     window.kongregate = kongregateAPI.getAPI();
     kongregate.services.connect();
