@@ -22,5 +22,12 @@ if [ -z "${no_min}" ]; then
 	cd ..
 	vs=~/Desktop/arh/index.html
 	js-beautify ./swf_backup/universe/index.html > ${vs}
-	diff ${vs} ${vs}2
+	echo ${vs}2 ${vs}
+	diff ${vs}2 ${vs} || {
+		echo y \?
+		read -n1 -t $((60*60*24)) ans
+		if [ ${ans} = y ]; then
+			mv ${vs} ${vs}2
+		fi
+	}
 fi

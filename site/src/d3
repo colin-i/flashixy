@@ -1,6 +1,7 @@
 <style>/* at login, and at user dashboard */
  input {
-  color: white;
+  color: white;/* for android , setting at .container white is not enough */
+  background: black;/* back at pc, because of color white */
  }
  input::placeholder {
   color: #aaa;

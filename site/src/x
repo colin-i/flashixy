@@ -9,6 +9,7 @@
     padding: 0;
     width: 100%;
     height: 100%;
+    overflow: hidden;/*there is a scroll bar that is not good*/
    }
    body {
     display: block;

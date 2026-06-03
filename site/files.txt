@@ -7,7 +7,7 @@
 
 #third and fourth rows are optional for src/dest extra copies
 
-#c this is a ln
+#c
 x
 	a0
 		c0
@@ -17,7 +17,7 @@ x
 		c3
 		a3_2
 		a3_3
-#b
+#b is a ln
 index.html
 	a0
 		b0
@@ -28,7 +28,7 @@ index.html
 		s1
 		s2
 		a3
-			blank
+			b3_3
 			b3_2
 				a3_2
 			b3_2
