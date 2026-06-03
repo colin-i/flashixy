@@ -7,12 +7,23 @@
 
 #third and fourth rows are optional for src/dest extra copies
 
+#c this is a ln
+x
+	a0
+		c0
+	blank
+	a2
+	a3
+		c3
+		a3_2
+		a3_3
 #b
 index.html
 	a0
 		b0
 	b1
 	b2
+		a2
 	b3
 		s1
 		s2
@@ -22,21 +33,12 @@ index.html
 				a3_2
 			b3_2
 				a3_3
-#c this is a ln
-x
-	a0
-		c0
-	blank
-	c2
-	a3
-		c3
-		a3_2
-		a3_3
 #d ln
 member.html
 	b0
 	b1
 	b2
+		a2
 	d3
 		s1
 		s2
@@ -46,6 +48,7 @@ scores.html
 	b0
 	b1
 	b2
+		a2
 	e3
 		s1
 		s3

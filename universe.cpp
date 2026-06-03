@@ -91,24 +91,22 @@ int main(int argc,char**argv){
         }
 	)");
 	actionf_sprite(presprite,buf,R"(
-	function bar_button(shared,name,desc,distance,container,f_on,f_off){
-		var so_m=SharedObject.getLocal(shared);
+	function bar_button(shared,name,desc,distance,container,dflt,f_on,f_off){
 		var dsc=desc+' on/off';
-		//si poate sa nu fie deloc si merge pe true
-		if(so_m.data['on']!=false){
-		//undefined sau true
+
+		var so_m=SharedObject.getLocal(shared);
+		var b=so_m.data['on'];
+		if(b==undefined)b=dflt;
+		if(b){
 			var soundstate=name;
 			add_button(soundstate,dsc,name);
 			var sound_on_bmp=bmp;
 			var sound_off_bmp=flash.display.BitmapData.loadBitmap('bar_'+name+'_off');
-			var is_sound=true;
 		}else{
-		//doar false
 			var soundstate=name+'_off';
 			add_button(soundstate,dsc,name);
 			var sound_on_bmp=flash.display.BitmapData.loadBitmap('bar_'+name);
 			var sound_off_bmp=bmp;
-			var is_sound=false;
 		}
 		var mc=this[name];
 		mc._%c=distance;
@@ -125,7 +123,7 @@ int main(int argc,char**argv){
 				container['is_'+name]=true;
 			}
 		}
-		return is_sound;
+		return b;
 	}
 	function set_sound_on(){
 		_root.game.music.start();
@@ -151,7 +149,7 @@ int main(int argc,char**argv){
 	bar_coord+=button_szAndInter;
 	din_buf_in_buf(R"(
 		//_root.game.music inca nu este aici
-		var is_sound=bar_button('music','sound','Music',%u,this,set_sound_on,set_sound_off);
+		var is_sound=bar_button('music','sound','Music',%u,this,true,set_sound_on,set_sound_off);
 	)",bar_coord);
 	//chei
 	bar_coord+=button_szAndInter;
@@ -169,10 +167,10 @@ int main(int argc,char**argv){
 	//intro
 	actionf_sprite(presprite,buf2,R"(
 	function intro_button_show(){
-		return bar_button('showIntro','intro','Intro',%u,this);
+		return bar_button('showIntro','intro','Intro',%u,this,true);
 	}
 	function img_button_show(){
-		return bar_button('showImg','pimg','Preview',%u,this);
+		return bar_button('showImg','pimg','Preview',%u,this,false);
 	}
 	function extra_buttons_show(){
 		intro_button_show();

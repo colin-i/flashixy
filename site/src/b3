@@ -1,9 +1,5 @@
 
 <script type="module">
-  const gameDiv = document.getElementById("game");
-  gameDiv.style.flex = 1;
-  gameDiv.style.width = "100%";
-
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
 
   import {
