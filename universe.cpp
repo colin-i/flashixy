@@ -16,10 +16,9 @@ int main(int argc,char**argv){
 //rooted_swf_path("universe") "test/universe.swf"
 	flags_macro
 	char*nm=getenv("site");
-	bool is_flashixy;
-	if(!nm){
-		nm="";is_flashixy=false;
-	}else is_flashixy=true;
+	bool is_flashixy=false;
+	if(!nm)nm="";
+	else is_flashixy=true;
 	char nmbuf[100];sprintf(nmbuf,"%suniverse/universe.swf",nm);
 	swf_new_ex(nmbuf,width_nr,height,0x000000,fps,flags);
 
@@ -243,59 +242,6 @@ int main(int argc,char**argv){
         }
     )");
 
-	actionf(buf,R"(
-        function counterBar_init(max_pos){
-            var mc=bar.attachMovie('counterBar','counterBar',bar.getNextHighestDepth());
-            mc._%s=%u;mc['barNr']=0;mc['barMax']=max_pos;
-        }
-	)",(bar_x<bar_y?"x":"y"),bar_startPos);
-	actionf(buf,R"(
-        function counterBar_step(){
-			counterBar_jump(1);
-        }
-	function want_end(){
-		//se scoate dupa
-		//game.scenario._visible=false;
-
-		//raman alea pe acolo, cine le mai tine socoteala
-		game.scenario.removeMovieClip();
-
-		var mc=env_set();
-		var endfps=%u;
-		mc.onEnterFrame=function(){
-			endfps--;
-			if(endfps<1){
-			//e scos ca e in game
-				end_scenario();
-			}
-		}
-	}
-	function counterBar_jump(a){
-            bar.counterBar.barNr+=a;
-
-            if(bar.counterBar.barNr>=bar.counterBar.barMax)want_end();
-		//in cel mai rau caz la ruleta ar trasa in afara ecranului la end la ruleta
-		//aici pare extra la euniverse doar cu Chambers dar e povestea ca la asm e doar Less2 si practic e mai avantajos, asa ca nu mai fac artificii de calcul in alta parte
-
-		bar.counterBar.draw_progressBar();
-        }
-	)",2*fps);
-
-	action(R"(
-        function draw_list_entry(mc,wd,hg){
-            draw_list_entry_ex(mc,wd,hg,0x0000ff);
-        }
-        function draw_list_entry_ex(mc,wd,hg,col){
-            mc.lineStyle(list_lineSz,col);
-            mc.beginBitmapFill(list_bmp,list_matrix,true);
-            var marginVal=list_lineSz/2;
-            mc.moveTo(marginVal,marginVal);
-            mc.lineTo(wd-marginVal,marginVal);mc.lineTo(wd-marginVal,hg-marginVal);
-            mc.lineTo(marginVal,hg-marginVal);mc.lineTo(marginVal,marginVal);
-            mc.endFill();
-        }
-	)");
-
 	#define list_inset 100
 	int list_w=width-(2*list_inset);
 	int list_h=height-(2*list_inset);
@@ -319,10 +265,14 @@ int main(int argc,char**argv){
 	char color1buf[sizeof(f1)-1+6+sizeof(f2)-1+sizeof(stable_sort[2])-1+sizeof(f3)-1+maxuint+sizeof(f4)-1+1];
 	//char*desc_height;
 	//char*under1;char*under2;
+	char counterBarTestChar;
+	char*preview_prefix;
 
 	if(!is_flashixy){
 		load_extern="";start_scenario_ante="";start_scenario_post="";list_loaded="";location_mark="";//desc_height="";
 		//under1="_root.strip_underscores(";under2=")";
+		counterBarTestChar='>';
+		preview_prefix="'https://flashixy.com/'+";
 	}else{
 		presprite=swf_sprite_new();
 		action_sprite(presprite,R"(
@@ -356,7 +306,64 @@ int main(int argc,char**argv){
 
 		//desc_height="if(_root.singleTraining_mouse[pos])desc_hg-=oneLine_h;";
 		//under1="";under2="";
+		counterBarTestChar='=';
+		preview_prefix="";
 	}
+
+	actionf(buf,R"(
+        function counterBar_init(max_pos){
+            var mc=bar.attachMovie('counterBar','counterBar',bar.getNextHighestDepth());
+            mc._%s=%u;mc['barNr']=0;mc['barMax']=max_pos;
+        }
+	)",(bar_x<bar_y?"x":"y"),bar_startPos);
+	actionf(buf,R"(
+        function counterBar_step(){
+			counterBar_jump(1);
+        }
+	function want_end(){
+		//se scoate dupa
+		//game.scenario._visible=false;
+
+		//raman alea pe acolo, cine le mai tine socoteala
+		game.scenario.removeMovieClip();
+
+		var mc=env_set();
+		var endfps=%u;
+		mc.onEnterFrame=function(){
+			endfps--;
+			if(endfps<1){
+			//e scos ca e in game
+				end_scenario();
+			}
+		}
+	}
+	function counterBar_jump(a){
+		bar.counterBar.barNr+=a;
+
+		if(bar.counterBar.barNr%c=bar.counterBar.barMax)want_end();
+		//in cel mai rau caz la ruleta ar trasa in afara ecranului la end la ruleta
+		//13rooms 15racecourse 17t-f 21ball-hit 23roulette
+		//==      ==           ==    ==         >=
+
+		bar.counterBar.draw_progressBar();
+	}
+	)",2*fps,counterBarTestChar);
+
+	action(R"(
+        function draw_list_entry(mc,wd,hg){
+            draw_list_entry_ex(mc,wd,hg,0x0000ff);
+        }
+        function draw_list_entry_ex(mc,wd,hg,col){
+            mc.lineStyle(list_lineSz,col);
+            mc.beginBitmapFill(list_bmp,list_matrix,true);
+            var marginVal=list_lineSz/2;
+            mc.moveTo(marginVal,marginVal);
+            mc.lineTo(wd-marginVal,marginVal);mc.lineTo(wd-marginVal,hg-marginVal);
+            mc.lineTo(marginVal,hg-marginVal);mc.lineTo(marginVal,marginVal);
+            mc.endFill();
+        }
+	)");
+
 	action(R"(
 		function strip_underscores(txt){
 			var splitAr=txt.split('_');
@@ -930,14 +937,13 @@ int main(int argc,char**argv){
 				}
 				mcl.addListener(listener);
 
-				mcl.loadClip(_name+'.jpg',_root.holder);
-				//https://flashixy.com/
+				mcl.loadClip(%s_name+'.jpg',_root.holder);
 			}
 		}
 		onRollOut=function(){
 			if(_root.bar.is_pimg)_root.holder.removeMovieClip();
 		}
-	)",height/2);
+	)",height/2,preview_prefix);
     swf_sprite_showframe(presprite);
     sprite=swf_sprite_done(presprite);swf_exports_add(sprite,"list_entry");
     //list_entry_play
