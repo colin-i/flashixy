@@ -326,10 +326,6 @@ int main(int argc,char**argv){
 				var roll_store=bar.star.onRollOver;
 
 				bar.star['dbRate']=0;
-				function onRateLoaded(rate){
-					bar.star.dbRate=rate;
-				}
-				flash.external.ExternalInterface.addCallback("onRateLoaded",this,onRateLoaded);
 				flash.external.ExternalInterface.call("requestRate",singleTraining[pos]);
 
 				bar.star.onPress=function(){
@@ -357,6 +353,12 @@ int main(int argc,char**argv){
 				}
 				bar.star._y=)";
 		if(snprintf(start_scenario_ante,start_scenario_ante_sz,"%s%u;",s,bar_coord)>=start_scenario_ante_sz)exit(1);
+		action(R"(
+			function onRateLoaded(rate){
+				bar.star.dbRate=rate;
+			}
+			flash.external.ExternalInterface.addCallback("onRateLoaded",null,onRateLoaded);
+		)");
 
 		start_scenario_post=R"(
 				flash.external.ExternalInterface.call('addPlay',singleTraining[pos]);
