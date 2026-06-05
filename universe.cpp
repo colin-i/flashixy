@@ -161,8 +161,8 @@ int main(int argc,char**argv){
 		}
 	)",(bar_x<bar_y?'x':'y'),bar_coord);
 	//calculations
-	int bar_startPos=bar_coord+button_lat*(1+pointless_add);
-	bar_coord=bar_startPos+button_lat;
+	int bar_normal_startPos=bar_coord+button_lat*(1+pointless_add);
+	bar_coord=bar_normal_startPos+button_lat;
 	//intro
 	actionf_sprite(presprite,buf2,R"(
 	function intro_button_show(){
@@ -250,7 +250,7 @@ int main(int argc,char**argv){
 	int text_height=list_unit_h-static_text_off_subtract;
 
 	char*load_extern;
-	char*start_scenario_ante;
+	char start_scenario_ante[100];
 	char*start_scenario_post;
 	char*list_loaded;
 
@@ -267,12 +267,14 @@ int main(int argc,char**argv){
 	//char*under1;char*under2;
 	char counterBarTestChar;
 	char*preview_prefix;
+	int bar_startPos;
 
 	if(!is_flashixy){
-		load_extern="";start_scenario_ante="";start_scenario_post="";list_loaded="";location_mark="";//desc_height="";
+		load_extern="";*start_scenario_ante='\0';start_scenario_post="";list_loaded="";location_mark="";//desc_height="";
 		//under1="_root.strip_underscores(";under2=")";
 		counterBarTestChar='>';
 		preview_prefix="'https://flashixy.com/'+";
+		bar_startPos=bar_normal_startPos;
 	}else{
 		presprite=swf_sprite_new();
 		action_sprite(presprite,R"(
@@ -297,8 +299,20 @@ int main(int argc,char**argv){
 				return undefined;
 			}
 		)";
-		start_scenario_ante="if(nm){";
-		start_scenario_post="flash.external.ExternalInterface.call('addPlay',singleTraining[pos]);}else homeAgain();";
+
+		strcpy(start_scenario_ante,R"(
+			if(nm){
+				bar.add_button('star','Rate the game','star');
+				bar.star._y=)");//attention at start_scenario_ante[100];
+		char*fix=start_scenario_ante+strlen(start_scenario_ante);
+		sprintf(fix,"%u;",bar_coord);
+		dbl=swf_img("../tmp/root/star.dbl");
+		swf_exports_add(dbl,"bar_star");
+
+		start_scenario_post=R"(
+				flash.external.ExternalInterface.call('addPlay',singleTraining[pos]);
+			}else homeAgain();
+		)";
 		list_loaded=R"(
 			if(link_id)attachMovie('get_url','get_url',getNextHighestDepth());
 		)";
@@ -308,6 +322,7 @@ int main(int argc,char**argv){
 		//under1="";under2="";
 		counterBarTestChar='=';
 		preview_prefix="";
+		bar_startPos=bar_coord+button_lat*(1+pointless_add);
 	}
 
 	actionf(buf,R"(
@@ -353,15 +368,15 @@ int main(int argc,char**argv){
         function draw_list_entry(mc,wd,hg){
             draw_list_entry_ex(mc,wd,hg,0x0000ff);
         }
-        function draw_list_entry_ex(mc,wd,hg,col){
-            mc.lineStyle(list_lineSz,col);
-            mc.beginBitmapFill(list_bmp,list_matrix,true);
-            var marginVal=list_lineSz/2;
-            mc.moveTo(marginVal,marginVal);
-            mc.lineTo(wd-marginVal,marginVal);mc.lineTo(wd-marginVal,hg-marginVal);
-            mc.lineTo(marginVal,hg-marginVal);mc.lineTo(marginVal,marginVal);
-            mc.endFill();
-        }
+		function draw_list_entry_ex(mc,wd,hg,col){//is ok, is not z index onrollover problem, test it with zzz=list_lineSz+10 and col+random(0xffFF)
+			mc.lineStyle(list_lineSz,col);
+			mc.beginBitmapFill(list_bmp,list_matrix,true);
+			var marginVal=list_lineSz/2;
+			mc.moveTo(marginVal,marginVal);
+			mc.lineTo(wd-marginVal,marginVal);mc.lineTo(wd-marginVal,hg-marginVal);
+			mc.lineTo(marginVal,hg-marginVal);mc.lineTo(marginVal,marginVal);
+			mc.endFill();
+		}
 	)");
 
 	action(R"(
@@ -1223,259 +1238,3 @@ int main(int argc,char**argv){
 #ifdef __cplusplus
 }
 #endif
-
-
-/*
-#define playsid 13150617
-#define ratsid 13150685
-	actionf(buf, R"(
-		var rats_id=%u;
-		function put_server(nm,t,value){
-//informer(inform.info+' b '+value);
-			var u_id=kongregate.services.getUserId();
-//ca poate greseste cineva si intra cu playsid sau ratsid si joaca si strica tot
-			if(u_id!=%u&&u_id!=rats_id){
-				var vars=new LoadVars();
-				vars.user_id=stat_id(t);
-				vars.api_key='a2a76940-ec2c-4e4b-9bb9-81f5784d6d7c';
-				vars['zz'+nm+' rating_plays']=value;
-				//la send trebuie target _self _blank ...
-				var lv=new LoadVars();
-				//onLoad This handler is undefined by default.
-				//lv.onLoad=function(b){if(b==false)informer('Error');}
-				//doar cu primul parametru nu trimite
-				vars.sendAndLoad('https://api.kongregate.com/api/submit_statistics.json',lv);
-				//fara asta nu arata nimic: "Make sure you have display in leaderboards checked"
-			}
-		}
-	)", ratsid,playsid);
-	actionf(buf, R"(
-		function stat_id(type){
-			if(type=='%s')return %u;
-			else if(type=='%s')return rats_id;
-			return kongregate.services.getUserId();
-		}
-	)",pop, playsid, rat);
-	actionf(buf,R"(
-		function parse_score(data){
-//BIG_INT in baza da date
-			return new Number(parse_score_base(data));
-		}
-		function parse_score_base(data){
-			var against='"score":';
-			var pos=data.indexOf(against);
-			if(pos==-1)return %s;
-			var i=pos+against.length;var j=i;while(isNaN(data.charAt(j))==false)j++;
-			return data.substr(i,j-i);
-		}
-	)", scor_bazic_string);
-	action(R"(
-		function form_stat_retrive(n,u){
-			//www.kongregate nu trimite nimic
-			return 'http://api.kongregate.com/api/high_scores/friends/'+n+'/'+u+'.json';
-			//lifetime
-		}
-	)");
-	actionf(buf, "var double_profit=%u", 10);//ca BIG_INT
-	//922.337.203 si 10 la stele (*5=1 12E0 BE7F)
-	action(R"(
-//poate sunt deja 33.000.000 useri (http://www.kongregate.com/users/33000000/posts), nu e matematic sa las maxim 20.000.000, trec de la Number la BIG_INT
-		function parse_rate(nr){
-//chiar nu e frumoasa impartirea de numere double:1semn/11exponent/52mantisa
-//"level":1,"score":123456789012,"avatar_url"
-//Number integers, mantisa 52bit: -9,007,199,254,740,992 (-2^53) to     9.007.199.254.740.992 (2^53)
-//The maximum value of a stat is BIG_INT (9.223 x 10^18)            9.223.372.036.854.775.807
-			return parse_rate_base(parse_score_base(nr));
-		}
-		function parse_rate_base(str){
-//tot codul acesta doar ca sa incapa si zero cand dau rating din joc pentru prima data
-			var last=str.length-1;
-			var u=str.charAt(0);var uu='';var s=str.charAt(last);
-			for(var i=last-1;i>0;i--){
-				var a=str.charAt(i);
-				if(i<double_profit)s=a+s;
-				else uu=a+uu;
-			}
-			//ActionToInteger nu este BIG_INT
-			return new rate_concat(int(u+uu),new Number(s));
-		}
-		function form_rate(rt){
-			var x=rt.sum.toString();var dif=double_profit-x.length;
-			for(var i=0;i<dif;i++)x='0'+x;
-			return rt.users.toString()+x;
-		}
-		function rate_concat(u,s){
-			this.users=u;this.sum=s;
-		}
-	)");
-*/
-	//debug
-	//informer  e folosit la 'Timeout Error' la rating
-/*	presprite = swf_sprite_new();
-	EditText edTx; edTx.fontid = defFont; edTx.font_height = 20; edTx.rgba = 0xffff00ff;
-	int informer = swf_text(width, edTx.font_height * 2, information, HasFont | HasTextColor | ReadOnly | NoSelect, &edTx);
-	swf_sprite_placeobject(presprite, informer, 0); swf_sprite_showframe(presprite);
-	sprite = swf_sprite_done(presprite); swf_exports_add(sprite, information);
-	actionf(buf, R"(
-		function inf_zero(){
-//nu se poate sterge daca se adauga in list.swf
-			attachMovie('%s','%s',getNextHighestDepth());%s.n=0;
-		}
-		function inf_cut(){
-//nu se poate sterge din list.swf
-			%s.removeMovieClip();
-		}
-	)", information, information, information, information);//, information
-*/
-	/*action(R"(
-        function infoOut(mc){
-            mc.removeMovieClip();
-        }
-        function informer(s){
-			if(inform!=undefined)clearTimeout(inform.timer);
-			else{
-				attachMovie('informer','inform',getNextHighestDepth());
-				informer._x=_width/2;informer._y=_height/2;
-			}
-            inform.onEnterFrame=function(){
-                this.onEnterFrame=undefined;
-                this.info=s;
-                this.timer=setTimeout(infoOut,3000,this);
-            }
-        }
-    )");*/
-
-
-/*	actionf_sprite(presprite, buf, R"(
-        var rating_stars=add_mc('Rating:');
-        rating_stars.onEnterFrame=function(){
-			//dupa, pentru stele peste text pentru onPress
-            this.onEnterFrame=null;
-
-			function light_stars(n){
-                for(i=1;i<=n;i++){rating_stars["star"+i].gotoAndStop(2);}
-                for(i=n+1;i<=5;i++){rating_stars["star"+i].gotoAndStop(1);}
-            }
-			var stars=this;
-            var load_rate=new LoadVars();
-            load_rate.onData=function(src){
-                if(src!=undefined){
-					var rate=_root.parse_score(src);
-					var rating_y=(oneLine_h-rate_h)/2;var rating_x=wd-10;
-                    for(var i=0;i<5;i++){
-						var n=5-i;
-						var rt=stars.attachMovie("rating_star","star"+n,stars.getNextHighestDepth());
-                        rt._y=rating_y;
-                        rating_x-=rate_w;rt._x=rating_x;
-                        rt['rate']=n;
-						rt.onPress=function(){
-							var n=this['rate'];
-							var c_frame=this._currentframe;var this_star=this;this.gotoAndStop(3);
-							var rate_get=new LoadVars();
-							rate_get.onData=function(src){
-								this_star.gotoAndStop(c_frame);
-                                if(src!=undefined){
-									_root.put_server(name_strip,undefined,n);
-									light_stars(n);
-
-									var rt=_root.parse_rate(src);
-									if(rate==0)rt.users++;rt.sum+=n-rate;
-									rate=n;
-									var sc=_root.form_rate(rt);
-									_root.put_server(name_strip,'%s',sc);
-								}
-							}
-							var url_name=_root.form_stat_retrive(_root.singleTraining_stat[episode_number],_root.rats_id);
-							rate_get.load(url_name);
-						}
-                    }
-					light_stars(rate);
-				}
-            };
-			var get_the_rate=new LoadVars();
-			var urlname=_root.form_stat_retrive(_root.singleTraining_stat[episode_number],_global.kongregate.services.getUserId());
-			get_the_rate.sendAndLoad(urlname,load_rate);
-        }
-	)", rat);
-*/
-
-    /*rating
-    presprite=swf_sprite_new();
-    int star_sz[2];
-    int star_empty_dbl=swf_dbl_ex("../img/root/empty_star.dbl",star_sz);
-veche    int star_empty=swf_shape_bitmap(star_empty_dbl,star_sz[0],star_sz[1]);
-    swf_sprite_placeobject(presprite,star_empty,0);
-    action_sprite(presprite,"stop()");
-    swf_sprite_showframe(presprite);
-    int star_full_dbl=swf_dbl("../img/root/full_star.dbl");
-veche    int star_full=swf_shape_bitmap(star_full_dbl,star_sz[0],star_sz[1]);
-    swf_sprite_placeobject(presprite,star_full,1);swf_sprite_showframe(presprite);
-    int star_wait_dbl=swf_dbl("../img/root/wait.dbl");
-veche    int star_wait=swf_shape_bitmap(star_wait_dbl,star_sz[0],star_sz[1]);
-    swf_sprite_placeobject(presprite,star_wait,2);
-    swf_sprite_removeobject(presprite,0);swf_sprite_removeobject(presprite,1);
-    swf_sprite_showframe(presprite);
-    sprite=swf_sprite_done(presprite);swf_exports_add(sprite,"rating_star");
-*/
-
-		/*
-		if(_root['singleTraining_scores'].length>0){
-			createTextField('textF',getNextHighestDepth(),0,0,xPos,list_unit_h);
-			textF.selectable=false;
-			var fmt=new TextFormat();fmt.size=list_unit_h-10;fmt.align='right';
-			textF.text=_root.singleTraining_scores[pos];
-			var dotpos=textF.text.indexOf('.');
-			if(dotpos!=-1)textF.text=textF.text.substr(0,dotpos)+textF.text.substr(dotpos,2);
-			textF.setTextFormat(fmt);
-		}
-		*/
-
-/*
-			var statista='%s';
-			var loader=new LoadVars();
-			loader.onData=function(data){
-				if(data!=undefined){
-					var plays=parse_score(data);
-					put_server(strip_underscores(singleTraining[pos]),statista,plays+1);
-				}
-			}
-			loader.load(form_stat_retrive(singleTraining_stat[pos],stat_id(statista)));
-*/
-
-/*
-
-    //scenario_done
-    presprite=swf_sprite_new();
-    actionf_sprite(presprite,buf,"_x=%u",scenario_info_x);
-    actionf_sprite(presprite,buf,"var height=%u;var wd=%u;var oneLine_h=%u",height,scenario_info_unit_w,scenario_info_unit_h);
-    actionf_sprite(presprite,buf,"var textHeight=%u",infoText_h);
-//    actionf_sprite(presprite,buf,"var rate_w=%u;var rate_h=%u",star_sz[0],star_sz[1]);
-	action_sprite(presprite, R"(
-        var yPos=0;
-        function add_mc(txt){
-            var d=getNextHighestDepth();
-            var mc=attachMovie('info_text','info_text'+d,d);
-            mc['wd']=wd;mc['hg']=oneLine_h;
-            mc['txt']=txt;mc['textHeight']=textHeight;
-            mc._y=yPos;
-            yPos+=oneLine_h;
-            return mc;
-        }
-        ////
-        add_mc('Level Done');
-        add_mc('Time: '+time_sec+' seconds');
-        //
-	)");
-	action_sprite(presprite, R"(
-        ////
-        var mc=attachMovie('info_button','info_button',getNextHighestDepth());
-        mc._y=yPos;
-        mc['txt']='OK';
-        mc.onPress=_root.homeAgain;
-        yPos+=oneLine_h;
-        //
-        _y=(height-yPos)/2;
-    )");
-    swf_sprite_showframe(presprite);
-    sprite=swf_sprite_done(presprite);swf_exports_add(sprite,"scenario_done");
-*/
