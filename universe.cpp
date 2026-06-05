@@ -250,7 +250,7 @@ int main(int argc,char**argv){
 	int text_height=list_unit_h-static_text_off_subtract;
 
 	char*load_extern;
-	#define start_scenario_ante_sz 1000
+	#define start_scenario_ante_sz 2000
 	char start_scenario_ante[start_scenario_ante_sz];
 	char*start_scenario_post;
 	char*list_loaded;
@@ -308,7 +308,8 @@ int main(int argc,char**argv){
 		presprite=swf_sprite_new();
 		action_sprite(presprite,R"(
 			var mx=new flash.geom.Matrix();
-			var bmp=flash.display.BitmapData.loadBitmap('bar_star_empty');
+			if(star)var bmp=flash.display.BitmapData.loadBitmap('bar_star');
+			else var bmp=flash.display.BitmapData.loadBitmap('bar_star_empty');
 			var wd=bmp.width;var hg=bmp.height;
 			beginBitmapFill(bmp,mx,false);
 			lineTo(wd,0);lineTo(wd,hg);
@@ -323,16 +324,24 @@ int main(int argc,char**argv){
 			if(nm){
 				bar.add_button('star','Rate the game','star');
 				var roll_store=bar.star.onRollOver;
+
+				bar.star['dbRate']=0;
+				function onRateLoaded(rate){
+					bar.star.dbRate=rate;
+				}
+				flash.external.ExternalInterface.addCallback("onRateLoaded",this,onRateLoaded);
+				flash.external.ExternalInterface.call("requestRate",singleTraining[pos]);
+
 				bar.star.onPress=function(){
 					if(!this.stars){
 						this.onRollOut();//to hide the description
 						this.onRollOver=undefined;
 						var mc=this.createEmptyMovieClip('stars',this.getNextHighestDepth());
-						for(var i=1;i<=5;){
-							var d=mc.getNextHighestDepth();
-							var mv=mc.attachMovie('rate','rate'+d,d);
-							mv.i=i;mv.rate=6-i;
-							i++;
+						for(var i=5;i>=1;){
+							var mv=mc.attachMovie('rate','rate'+i,mc.getNextHighestDepth());
+							mv.i=6-i;mv.rate=i;
+							if(i<=this.dbRate)mv.star=true;
+							i--;
 						}
 					}else{
 						for(var mc in this.stars){
@@ -541,6 +550,7 @@ int main(int argc,char**argv){
 		if(!bar.intro)
 		//mc. cel mai usor de testat, ca altfel ramane visibil rau, se apasa din prima Home 
 			bar.extra_buttons_show();
+		bar.star.removeMovieClip();
 
 		//asta e cel tare cu reset de automatics musica si counter
             game_reset();

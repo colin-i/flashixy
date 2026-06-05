@@ -1,3 +1,4 @@
+window.Game.player = player;// for js->as callback
 async function data_read() {
 	const response = await fetch("plays.txt");
 	const txt = await response.text();

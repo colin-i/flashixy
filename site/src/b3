@@ -13,6 +13,7 @@
     getFirestore,
     increment,
     setDoc,
+    runTransaction,
     updateDoc
   } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
@@ -22,7 +23,7 @@
 
   window.addPlay = function(name) {
     const ref = doc(db, "plays", "plays");
-    updateDoc( ref,//must be initialized //await
+    updateDoc( ref,//must be initialized 1/4 //await
       {
          [name]: increment(1)
       }
@@ -33,10 +34,10 @@
       if (ins) {
         await setDoc(nameRef, {
           score: score
-        });
+        }, { merge: true });//merge with rate
       } else {
         const ref = doc(db, name, "a");//this can't be an overwrite, normal ids are 28 characters
-        await updateDoc( ref, {//must be initialized
+        await updateDoc( ref, {//must be initialized 2/4
           score: score
         });
       }
@@ -45,23 +46,50 @@
     }
   };
 
-  async function rate_game(ref, name, rate) {
-      const oldSnap = await getDoc(ref);
-      if (oldSnap.data().rate != undefined){
-        updateDoc( ref, {//await
-          rate: rate
-        });
-      }else{
-        setDoc( ref, {//await
-          rate: rate
-        },{ merge : true });
+  window.rateGame = async function(game, rate) {
+      let ref = nameRef;
+      if (!ins) ref = doc(db, game, "a");
+
+      const starsRef = doc(db, "plays", "stars");
+      const starsSumRef = doc(db, "plays", "stars_sum");
+
+      await runTransaction(db, async (transaction) => {
+        const oldSnap = await transaction.get(ref);
+        if (oldSnap.exists() && oldSnap.data().rate != undefined) {
+          const oldRate = oldSnap.data().rate;
+          const diff = rate - oldRate;
+          if ( diff != 0 ){
+            transaction.update(ref, {
+              rate: rate
+            });
+            transaction.update( starsSumRef, {//must be initialized 3/4
+              [game]: increment(diff)
+            });
+          }
+        }else{
+          transaction.set( ref, {
+            rate: rate
+          }, { merge: true });//merge with score
+          transaction.update( starsSumRef, {//must be initialized 3/3
+            [game]: increment(rate)
+          });
+          transaction.update( starsRef, {//must be initialized 4/4
+            [game]: increment(1)
+          });
+        }
+      });
+      window.requestRate(game);
+  }
+  window.requestRate = async function(game) {
+      let ref = nameRef;
+      if (!ins) ref = doc(db, game, "a");
+
+      const snap = await getDoc(ref);
+      let rate = snap.data().rate;
+      if(rate){
+        window.Game.player.onRateLoaded(rate);
       }
   }
-  window.rateGame = function(name, rate) {
-      let ref = nameRef;
-      if (!ins) ref = doc(db, name, "a");
-      rate_game(ref, name, rate);
-  };
 
   onAuthStateChanged(auth, async (user) => {//this will fire at least once
     if (user) {
