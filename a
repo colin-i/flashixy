@@ -1,5 +1,10 @@
 set -e
-
+if [ -n "$n" ]; then
+	if [ $n = 1 ]; then
+		export no_alt=x
+		export no_string=x
+	fi
+fi
 if [ -z "${no_prep}" ]; then
 	${CC} -g -c ${cdefines} universe.cpp -Wno-write-strings
 	if [ ! -f "./share/shared.o" ]; then

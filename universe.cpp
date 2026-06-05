@@ -250,7 +250,8 @@ int main(int argc,char**argv){
 	int text_height=list_unit_h-static_text_off_subtract;
 
 	char*load_extern;
-	char start_scenario_ante[100];
+	#define start_scenario_ante_sz 1000
+	char start_scenario_ante[start_scenario_ante_sz];
 	char*start_scenario_post;
 	char*list_loaded;
 
@@ -300,14 +301,53 @@ int main(int argc,char**argv){
 			}
 		)";
 
-		strcpy(start_scenario_ante,R"(
-			if(nm){
-				bar.add_button('star','Rate the game','star');
-				bar.star._y=)");//attention at start_scenario_ante[100];
-		char*fix=start_scenario_ante+strlen(start_scenario_ante);
-		sprintf(fix,"%u;",bar_coord);
 		dbl=swf_img("../tmp/root/star.dbl");
 		swf_exports_add(dbl,"bar_star");
+		dbl=swf_img("../tmp/root/star-empty.dbl");
+		swf_exports_add(dbl,"bar_star_empty");
+		presprite=swf_sprite_new();
+		action_sprite(presprite,R"(
+			var mx=new flash.geom.Matrix();
+			var bmp=flash.display.BitmapData.loadBitmap('bar_star_empty');
+			var wd=bmp.width;var hg=bmp.height;
+			beginBitmapFill(bmp,mx,false);
+			lineTo(wd,0);lineTo(wd,hg);
+			lineTo(0,hg);endFill();
+			_x=-i*wd;
+			delete bmp;
+		)");
+		swf_sprite_showframe(presprite);
+		sprite=swf_sprite_done(presprite);swf_exports_add(sprite,"rate");
+
+		char*s=R"(
+			if(nm){
+				bar.add_button('star','Rate the game','star');
+				var roll_store=bar.star.onRollOver;
+				bar.star.onPress=function(){
+					if(!this.stars){
+						this.onRollOut();//to hide the description
+						this.onRollOver=undefined;
+						var mc=this.createEmptyMovieClip('stars',this.getNextHighestDepth());
+						for(var i=1;i<=5;){
+							var d=mc.getNextHighestDepth();
+							var mv=mc.attachMovie('rate','rate'+d,d);
+							mv.i=i;mv.rate=6-i;
+							i++;
+						}
+					}else{
+						for(var mc in this.stars){
+							var mv=this.stars[mc];
+							if(mv.hitTest(_xmouse,_ymouse,false)){
+								flash.external.ExternalInterface.call('rateGame',singleTraining[pos],mv.rate);
+								break;
+							}
+						}
+						this.stars.removeMovieClip();
+						this.onRollOver=roll_store;
+					}
+				}
+				bar.star._y=)";
+		if(snprintf(start_scenario_ante,start_scenario_ante_sz,"%s%u;",s,bar_coord)>=start_scenario_ante_sz)exit(1);
 
 		start_scenario_post=R"(
 				flash.external.ExternalInterface.call('addPlay',singleTraining[pos]);

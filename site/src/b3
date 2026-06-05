@@ -9,6 +9,7 @@
 
   import {
     doc,
+    getDoc,
     getFirestore,
     increment,
     setDoc,
@@ -19,9 +20,9 @@
 
 <!-- -->
 
-  window.addPlay = async function(name) {
+  window.addPlay = function(name) {
     const ref = doc(db, "plays", "plays");
-    await updateDoc( ref,//must be initialized
+    updateDoc( ref,//must be initialized //await
       {
          [name]: increment(1)
       }
@@ -43,6 +44,25 @@
       console.error(e);
     }
   };
+
+  async function rate_game(ref, name, rate) {
+      const oldSnap = await getDoc(ref);
+      if (oldSnap.data().rate != undefined){
+        updateDoc( ref, {//await
+          rate: rate
+        });
+      }else{
+        setDoc( ref, {//await
+          rate: rate
+        },{ merge : true });
+      }
+  }
+  window.rateGame = function(name, rate) {
+      let ref = nameRef;
+      if (!ins) ref = doc(db, name, "a");
+      rate_game(ref, name, rate);
+  };
+
   onAuthStateChanged(auth, async (user) => {//this will fire at least once
     if (user) {
       nameRef = doc(db, "Chambers", user.uid);
