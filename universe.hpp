@@ -234,23 +234,15 @@ void init_episode(){
 #define static_text_off_subtract 10
 #define list_lineSz 2
 
-#define sorts_stable_length 3
-char*stable_sort[sorts_stable_length]={"Chronology","Newness","Plays"};//Compiler
-//#define sorts_stable_length 5
-//char*stable_sort[sorts_stable_length]={"Time","New","Plays","Site","Builder"};//Compiler/Newness is not fitting //only if not predefining at Location
-//#define rat "Rating"
-//#define pop "Plays"
-//da null asa, oare de ce: char* pop = sorts[1]; char* rat = sorts[2];
-//The compiler will automatically concatenate adjacent strings
-//#define rat_user rat "_user"
-//#define scor_bazic_string "'0'"
+#define sorts_stable_length 4
+char*stable_sort[sorts_stable_length]={"Chronology","Newness","Plays","Rating"};//Compiler Location
+char*stable_short_sort[sorts_stable_length]={"Chronicle","New","Play","Rate"};//  Builder  Site
 
 #define sorts1_length 2
-char* sorts1[sorts1_length]={stable_sort[0],stable_sort[1]}; // 4 "Location","Plays" // e la limita Chronology in web unde e mai mare decat in desktop
+char* sorts1[sorts1_length]={stable_sort[0],stable_sort[1]};
 
 #define sorts2_length sorts_stable_length
-char* sorts2[sorts2_length]={stable_sort[2],stable_sort[0],stable_sort[1]};
-//char* sorts2[sorts2_length]={stable_sort[2],stable_sort[0],stable_sort[1],stable_sort[3],stable_sort[4]};
+char* sorts_f[sorts2_length]={stable_sort[3],stable_sort[2],stable_short_sort[0],stable_sort[1]};
 
 //la automatics
 void din_buf_in_buf(char* s, ...) {

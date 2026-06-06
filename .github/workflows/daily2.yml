@@ -5,6 +5,10 @@ on:
   inputs:
    maxdif:
     description: "max difference"
+   art1:
+    description: "test the script"
+   art2:
+    description: "test the script2"
  schedule:
   - cron: '0 0 * * *'
     timezone: 'Europe/Bucharest'
@@ -14,24 +18,44 @@ jobs:
   runs-on: ubuntu-latest
 
   steps:
-   - name: Download latest daily.yml artifact
-     uses: dawidd6/action-download-artifact@v9
-     with:
-      github_token: ${{ secrets.PAT }}
-      workflow: daily.yml
-      workflow_conclusion: success
-      name: plays.txt
-      path: artifact
+   - name: Download latest daily.yml artifact (via gh)
+     if: ${{ !inputs.art1 }}
+     env:
+      GH_TOKEN: ${{ secrets.PAT }}
+     run: |
+      mkdir artifact
+      # get latest successful run of daily.yml
+      RUN_ID=$(gh run list \
+       --workflow daily.yml \
+       --status success \
+       --limit 1 \
+       --json databaseId \
+       --jq '.[0].databaseId')
+      echo "Latest run: $RUN_ID"
+      # download artifact named plays.txt
+      gh run download "$RUN_ID" \
+       --name plays.txt \
+       --dir artifact
+   - name: test1
+     if: ${{ inputs.art1 }}
+     run: |
+      mkdir artifact
+      echo -n "${{ inputs.art1 }}" > artifact/plays.txt
    - name: Show downloaded artifact
      run: |
       echo "Artifact:"
       cat artifact/plays.txt
    - name: Download plays.txt from latest release
+     if: ${{ !inputs.art1 }}
      env:
       GH_TOKEN: ${{ secrets.PAT }}
      run: |
       TAG=$(gh release list --repo colin-i/colin-i.github.io --json tagName --jq '.[0].tagName')
       gh release download "$TAG" --repo colin-i/colin-i.github.io --pattern plays.txt
+   - name: test2
+     if: ${{ inputs.art2 }}
+     run: |
+      echo -n "${{ inputs.art2 }}" > plays.txt
    - name: Show release asset
      run: |
       echo "Release asset:"
@@ -42,103 +66,163 @@ jobs:
      run: |
       release_content=$(cat plays.txt)
       artifact_content=$(cat artifact/plays.txt)
-
+      if [[ "$release_content" != *"|"* ]]; then
+       echo "Invalid release format"
+       exit 1
+      fi
+      if [[ "$artifact_content" != *"|"* ]]; then
+       echo "Invalid artifact format"
+       exit 1
+      fi
       if [ "$release_content" = "$artifact_content" ]; then
        echo "Equals"
        exit 1
       fi
-      if [[ "$release_content" != *";"* ]]; then
-       echo "Invalid release format"
+
+      release_plays="${release_content%%|*}"
+      artifact_plays="${artifact_content%%|*}"
+      if [[ "$release_plays" != *";"* ]]; then
+       echo "Invalid release plays format"
        exit 1
       fi
-      if [[ "$artifact_content" != *";"* ]]; then
-       echo "Invalid artifact format"
-       exit 1
-      fi
-
-      release_values="${release_content#*;}"
-
-      artifact_indexes="${artifact_content%%;*}"
-      artifact_values="${artifact_content#*;}"
-
-      read -ra release_arr <<< "$release_values"
-      read -ra artifact_arr <<< "$artifact_values"
-      read -ra artifact_sorted_indexes <<< "$artifact_indexes"
-
-      echo "Release values count: ${#release_arr[@]}"
-      echo "Artifact values count: ${#artifact_arr[@]}"
-      echo
-
-      if [ "${#release_arr[@]}" -ne "${#artifact_arr[@]}" ]; then
-       echo "Array size mismatch"
+      if [[ "$artifact_plays" != *";"* ]]; then
+       echo "Invalid artifact plays format"
        exit 1
       fi
 
-      echo "Checking value ranges..."
-      if [ -z "${{ inputs.maxdif }}" ]; then
-       z=300
-      else
-       z=${{ inputs.maxdif }}
+      release_ratings="${release_content#*|}"
+      artifact_ratings="${artifact_content#*|}"
+      if [[ "$release_ratings" != *";"* ]]; then
+       echo "Invalid release ratings format"
+       exit 1
       fi
-      for i in "${!release_arr[@]}"; do
-       r=${release_arr[$i]}
-       a=${artifact_arr[$i]}
+      if [[ "$artifact_ratings" != *";"* ]]; then
+       echo "Invalid artifact ratings format"
+       exit 1
+      fi
 
-       echo "Index $i -> release=$r artifact=$a allowed=[${r},$((r+z-1))]"
+      release_plays_values="${release_plays#*;}"
+      artifact_plays_indexes="${artifact_plays%%;*}"
+      artifact_plays_values="${artifact_plays#*;}"
+      read -ra plays_release_arr <<< "$release_plays_values"
+      read -ra plays_artifact_arr <<< "$artifact_plays_values"
+      read -ra plays_sorted_indexes <<< "$artifact_plays_indexes"
 
-       if (( a < r || a >= r + z )); then
-        echo "FAILED at index $i"
+      release_rating_values="${release_ratings#*;}"
+      artifact_rating_indexes="${artifact_ratings%%;*}"
+      artifact_rating_values="${artifact_ratings#*;}"
+      read -ra rating_release_arr <<< "$release_rating_values"
+      read -ra rating_artifact_arr <<< "$artifact_rating_values"
+      read -ra rating_sorted_indexes <<< "$artifact_rating_indexes"
+
+      validate_array () {
+       local is_rate=$1
+       shift
+       local -n release_arr=$1
+       local -n artifact_arr=$2
+
+       echo
+       echo "Release values count: ${#release_arr[@]}"
+       echo "Artifact values count: ${#artifact_arr[@]}"
+       echo "Checking array sizes..."
+       if [ "${#release_arr[@]}" -ne "${#artifact_arr[@]}" ]; then
+        echo "Array size mismatch"
         exit 1
        fi
-      done
+       echo "Array size check passed"
+       echo
 
-      echo
-      echo "Range validation passed"
-      echo
+       if [ "$is_rate" = "true" ]; then
+        echo "Checking rating ranges..."
+        for i in "${!release_arr[@]}"; do
+         #r_int="${release_arr[$i]}"
+         a_int="${artifact_arr[$i]}"
 
-      echo "Validating sorted indexes..."
+         echo "Rating $i -> artifact=$a_int" # release=$r_int
+         if (( a_int < 100 || a_int > 500 )); then
+          echo "FAILED rating out of bounds at index $i"
+          exit 1
+         fi
+         #if (( a_int < r_int || a_int > r_int + 100 )); then
+         #	echo "FAILED rating deviation at index $i"
+         #	exit 1
+         #fi
+        done
+       else
+        echo "Checking value ranges..."
+        # plays logic (unchanged maxdif behavior)
+        if [ -z "${{ inputs.maxdif }}" ]; then
+         z=300
+        else
+         z=${{ inputs.maxdif }}
+        fi
+        for i in "${!release_arr[@]}"; do
+         r="${release_arr[$i]}"
+         a="${artifact_arr[$i]}"
 
-      declare -a sorted_arr=()
+         echo "Index $i -> release=$r artifact=$a allowed=[${r},$((r+z))]"
 
-      for idx in "${artifact_sorted_indexes[@]}"; do
-       if (( idx < 0 || idx >= ${#artifact_arr[@]} )); then
-        echo "Invalid sorted index: $idx"
+         if (( a < r || a > r + z )); then
+          echo "FAILED plays at index $i"
+          exit 1
+         fi
+        done
+       fi
+       echo "Range validation passed"
+       echo
+
+       local -n artifact_sorted_indexes=$3
+
+       echo "Validating sorted indexes..."
+       declare -a sorted_arr=()
+       for idx in "${artifact_sorted_indexes[@]}"; do
+        if (( idx < 0 || idx >= ${#artifact_arr[@]} )); then
+         echo "Invalid sorted index: $idx"
+         exit 1
+        fi
+        value=${artifact_arr[$idx]}
+        echo "push $value from idx=$idx"
+        sorted_arr+=("$value")
+       done
+       echo "Validating sorted indexes passed"
+
+       echo
+       echo "Artifact indexes count: ${#artifact_sorted_indexes[@]}"
+       echo "Checking array size..."
+       if [ "${#sorted_arr[@]}" -ne "${#artifact_arr[@]}" ]; then
+        echo "sorted_arr size mismatch"
         exit 1
        fi
-       value=${artifact_arr[$idx]}
-       echo "push $value from idx=$idx"
-       sorted_arr+=("$value")
+       echo "Sorted array size test passed"
+       echo
+
+       echo "Checking descending order..."
+       prev=-1
+       for ((i=0; i<${#sorted_arr[@]}; i++)); do
+        value=${sorted_arr[$i]}
+
+        echo "$i -> $value"
+
+        if (( prev != -1 && value > prev )); then
+         echo "Descending order validation failed"
+         echo "Value $value is greater than previous $prev"
+         exit 1
+        fi
+
+        prev=$value
+       done
+       echo "Sorted index validation passed"
+      }
+
+      validate_array false plays_release_arr plays_artifact_arr plays_sorted_indexes
+
+      for i in "${!rating_artifact_arr[@]}"; do
+       rating_artifact_arr[$i]=$(awk "BEGIN {printf \"%d\", ${rating_artifact_arr[$i]} * 100}")
       done
+      validate_array true rating_release_arr rating_artifact_arr rating_sorted_indexes
 
-      echo
-      echo "Checking array size..."
-
-      if [ "${#sorted_arr[@]}" -ne "${#artifact_arr[@]}" ]; then
-       echo "sorted_arr size mismatch"
-       exit 1
-      fi
-
-      echo "Checking descending order..."
-
-      prev=-1
-
-      for ((i=0; i<${#sorted_arr[@]}; i++)); do
-       value=${sorted_arr[$i]}
-
-       echo "$i -> $value"
-
-       if (( prev != -1 && value > prev )); then
-        echo "Descending order validation failed"
-        echo "Value $value is greater than previous $prev"
-        exit 1
-       fi
-
-       prev=$value
-      done
-
-      echo
-      echo "Sorted index validation passed"
    - name: Upload updated plays.txt to release
+     if: ${{ !inputs.art1 }}
      env:
       GH_TOKEN: ${{ secrets.PAT }}
      run: |
@@ -147,6 +231,7 @@ jobs:
       cd artifact
       gh release upload "$TAG" --repo colin-i/colin-i.github.io --clobber plays.txt
    - name: Trigger deploy workflow
+     if: ${{ !inputs.art1 }}
      env:
       GH_TOKEN: ${{ secrets.PAT }}
      run: |

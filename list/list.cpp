@@ -132,6 +132,9 @@ int main(int argc,char**argv){
 	char*sorts_play=R"(
 		var s=flash.external.ExternalInterface.call('sorts_play');
 	)";
+	char*sorts_rate=R"(
+		var s=flash.external.ExternalInterface.call('sorts_rate');
+	)";
 	char*s0;char*ffirst;char*flast;char*specific;
 	if(!is_flashixy){
 		s0=sorts1[0];
@@ -140,11 +143,14 @@ int main(int argc,char**argv){
 		flast=sorts_new;
 		specific="";
 	}else{
-		s0=sorts2[0];
-		ffirst=sorts_play;
-		sprintf(buf2,"else if(n=='%s'){%s}",sorts2[1],sorts_chron);
+		s0=sorts_f[0];
+		ffirst=sorts_rate;
+		sprintf(buf2,"else if(n=='%s'){%s}else if(n=='%s'){%s}",sorts_f[1],sorts_play,sorts_f[2],sorts_chron);
 		flast=sorts_new;
-		specific="_root['sorter_play']=flash.external.ExternalInterface.call('sorts_plays');";
+		specific=R"(
+			_root['sorter_play']=flash.external.ExternalInterface.call('sorts_plays');
+			_root['sorter_rate']=flash.external.ExternalInterface.call('sorts_rates');
+		)";
 /*in clipa asta Location e identica cu Chronology
 		actionf(buf,R"(
 			function sorts_loc(){

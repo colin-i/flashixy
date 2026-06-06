@@ -1,20 +1,28 @@
 set -e
-g++ -I${HOME}/Desktop/actionswf/include -Wno-write-strings a.c -L${HOME}/Desktop/actionswf -lactionswf -lz
-a=`LD_LIBRARY_PATH=${HOME}/Desktop/actionswf ./a.out`
+get () {
+	g++ -I${HOME}/Desktop/actionswf/include -Wno-write-strings $1.c -L${HOME}/Desktop/actionswf -lactionswf -lz
+	a=`LD_LIBRARY_PATH=${HOME}/Desktop/actionswf ./a.out`
 
-arr=( $a )
-str=$(for i in "${!arr[@]}"; do
-		echo "${arr[$i]} $i"
-	done |
-	sort -rn |
-	awk '{print $2}' |
-	paste -sd' ')
+	arr=( $a )
+	str=$(for i in "${!arr[@]}"; do
+			echo "${arr[$i]} $i"
+		done |
+		sort -rn |
+		awk '{print $2}' |
+		paste -sd' ')
 
-echo $str
-echo $a
-
+	echo $str
+	echo $a
+}
+get a
+q=$str
+w=$a
+get b
 if [ -z "${no_inter}" ]; then
 	read
 fi
-echo -n "$str" > ../../swf_backup/euniverse/plays.txt
-echo -n ";$a" >> ../../swf_backup/euniverse/plays.txt
+f=../../swf_backup/euniverse/plays.txt
+echo -n "$q" > $f
+echo -n ";$w" >> $f
+echo -n "|$str" >> $f
+echo -n ";$a" >> $f

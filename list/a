@@ -1,5 +1,12 @@
 set -e
-
+if [ -n "$n" ]; then
+	if [ $n -lt 3 ]; then
+		export no_string=x
+		if [ $n -lt 2 ]; then
+			export no_alt=x
+		fi
+	fi
+fi
 if [ -z "${no_prep}" ]; then
 	${CC} -g -c list.cpp -Wno-write-strings ${cdefines}
 	${CC} list.o ${L} -lactionswf ${L2} -lz

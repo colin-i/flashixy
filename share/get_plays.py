@@ -14,4 +14,4 @@ path = os.path.join(
 with open(path, "r", encoding="utf-8") as f:
     data = json.load(f)
 
-print(data["gameplays_count"])
+print(data[sys.argv[2]])

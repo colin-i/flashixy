@@ -252,30 +252,34 @@ int main(int argc,char**argv){
 	char*load_extern;
 	#define start_scenario_ante_sz 2000
 	char start_scenario_ante[start_scenario_ante_sz];
+	char*bar_star_at_exit;
 	char*start_scenario_post;
 	char*list_loaded;
 
 	char*location_mark;
 	int color1=0xFF0000;
 	int color2=0x11aa11;//green//mai inchis ca nu se vede
-	char f1[]="xPos-=button_w;if(_root.singleTraining_ids[pos])draw_check(xPos,0x";
-	char f2[]=");";//if(_root.sharlistSort.data['value']=='
-	//100 aici vine cam de 7+ cifre
-	char f3[]="createTextField('txt_inf',getNextHighestDepth(),xPos-100,0,100,list_unit_h);txt_inf.text=_root.sorter_play[pos];var fmt=new TextFormat();fmt.align='right';fmt.size=";//'){
-	char f4[]=";txt_inf.setTextFormat(fmt);";//}
-	char color1buf[sizeof(f1)-1+6+sizeof(f2)-1+sizeof(stable_sort[2])-1+sizeof(f3)-1+maxuint+sizeof(f4)-1+1];
+	char f1[]="xPos-=button_w;if(_root.singleTraining_ids[pos])draw_check(0x";
+	char f2[]=");";
+	char f3[]="var fmt=new TextFormat();fmt.align='right';fmt.size=";
+	char f4[]=";xPos-=100;createTextField('txt_inf',getNextHighestDepth(),xPos,0,100,list_unit_h);txt_inf.text=_root.sorter_play[pos];txt_inf.setTextFormat(fmt);";//100 aici vine cam de 7+ cifre
+	char f5[]="fmt.align='left';createTextField('txt_infr',getNextHighestDepth(),xPos-100,0,100,list_unit_h);txt_infr.text=_root.sorter_rate[pos];txt_infr.setTextFormat(fmt);delete fmt;";//4 cifre
+	char color1buf[sizeof(f1)-1+6+sizeof(f2)-1+sizeof(f3)-1+maxuint+sizeof(f4)-1+sizeof(f5)-1+1];
 	//char*desc_height;
 	//char*under1;char*under2;
 	char counterBarTestChar;
 	char*preview_prefix;
 	int bar_startPos;
+	int text_x;int rest_x;
 
 	if(!is_flashixy){
-		load_extern="";*start_scenario_ante='\0';start_scenario_post="";list_loaded="";location_mark="";//desc_height="";
+		load_extern="";*start_scenario_ante='\0';bar_star_at_exit="";start_scenario_post="";list_loaded="";location_mark="";//desc_height="";
 		//under1="_root.strip_underscores(";under2=")";
 		counterBarTestChar='>';
 		preview_prefix="'https://flashixy.com/'+";
 		bar_startPos=bar_normal_startPos;
+		text_x=list_unit_w/4;
+		rest_x=list_unit_w-text_x;
 	}else{
 		presprite=swf_sprite_new();
 		action_sprite(presprite,R"(
@@ -359,6 +363,7 @@ int main(int argc,char**argv){
 			}
 			flash.external.ExternalInterface.addCallback("onRateLoaded",null,onRateLoaded);
 		)");
+		bar_star_at_exit="bar.star.removeMovieClip();";
 
 		start_scenario_post=R"(
 				flash.external.ExternalInterface.call('addPlay',singleTraining[pos]);
@@ -367,13 +372,15 @@ int main(int argc,char**argv){
 		list_loaded=R"(
 			if(link_id)attachMovie('get_url','get_url',getNextHighestDepth());
 		)";
-		sprintf(color1buf,"%s%x%s%s%u%s",f1,color1,f2,f3,text_height,f4);location_mark=color1buf;//%s,stable_sort[2]
+		sprintf(color1buf,"%s%x%s%s%u%s%s",f1,color1,f2,f3,text_height,f4,f5);location_mark=color1buf;
 
 		//desc_height="if(_root.singleTraining_mouse[pos])desc_hg-=oneLine_h;";
 		//under1="";under2="";
 		counterBarTestChar='=';
 		preview_prefix="";
 		bar_startPos=bar_coord+button_lat*(1+pointless_add);
+		text_x=list_unit_w/10;
+		rest_x=list_unit_w-text_x;
 	}
 
 	actionf(buf,R"(
@@ -500,7 +507,7 @@ int main(int argc,char**argv){
 			%s
 		}
 	)", l_view, l_view,list_loaded);
-	action(R"(
+	actionf(buf,R"(
         //var gameDomain='ajob.atwebpages.com';
         //127.0.0.1
         function load_swf(swf_name,instance){
@@ -552,7 +559,7 @@ int main(int argc,char**argv){
 		if(!bar.intro)
 		//mc. cel mai usor de testat, ca altfel ramane visibil rau, se apasa din prima Home 
 			bar.extra_buttons_show();
-		bar.star.removeMovieClip();
+		%s
 
 		//asta e cel tare cu reset de automatics musica si counter
             game_reset();
@@ -572,7 +579,7 @@ int main(int argc,char**argv){
 			game.scenario_info['pos']=pos;
 		}else start_scenario(pos);
         }
-	)");
+	)",bar_star_at_exit);
 	action(R"(
 		function full_path(a){
 			// /dir/a.swf
@@ -956,7 +963,7 @@ int main(int argc,char**argv){
     #define list_unit_play_w list_unit_play_h
     presprite=swf_sprite_new();
 	action_sprite(presprite,R"(
-		function draw_check(xPos,color){
+		function draw_check(color){
 			lineStyle(1,color);
 			var button_h_q=button_h/4;
 			moveTo(xPos,yPos+button_h-button_h_q);
@@ -979,11 +986,9 @@ int main(int argc,char**argv){
 		//play['pos']=pos;//moved to all list_entry
 		//
 		var xPos=play._x-10-button_w;
-		if(levelDone)draw_check(xPos,%u);
+		if(levelDone)draw_check(%u);
 		%s
 	)",!is_flashixy?color1:color2,location_mark);
-    #define text_x list_unit_w/4
-    #define rest_x list_unit_w-text_x
     int list_txt=swf_text(rest_x,list_unit_h,"message",(HasFont|ReadOnly|NoSelect),&ed);
     swf_sprite_placeobject_coords(presprite,list_txt,0,text_x,0);
 	actionf_sprite(presprite,buf,R"(
@@ -1231,7 +1236,7 @@ int main(int argc,char**argv){
     action_sprite(list_view_presprite,"createEmptyMovieClip('container',getNextHighestDepth())");
 	for(int i=0;i<(!is_flashixy?sorts1_length:sorts2_length);i++){
 		actionf_sprite(list_view_presprite,buf,"var mov=attachMovie('list_sort','%s',getNextHighestDepth());mov['coef']=%u", \
-			!is_flashixy?sorts1[i]:sorts2[i],i);
+			!is_flashixy?sorts1[i]:sorts_f[i],i);
 	}
     //
 	action_sprite(list_view_presprite,R"(
@@ -1252,7 +1257,7 @@ int main(int argc,char**argv){
 		}
 		//if(sharlistSort.data.timeout==undefined)sharlistSort.data['timeout']=9;
 		//timeout apare ciudat in fisierul sol, dar e corect
-	)",!is_flashixy?sorts1[0]:sorts2[0]);
+	)",!is_flashixy?sorts1[0]:sorts_f[0]);
 
 	action("var start_time");
 

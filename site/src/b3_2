@@ -2,7 +2,9 @@ window.Game.player = player;// for js->as callback
 async function data_read() {
 	const response = await fetch("plays.txt");
 	const txt = await response.text();
-	const plays = txt.split(";");
+	const text = txt.split("|");
+
+	const plays = text[0].split(";");
 	const plays_index = plays[0].split(" ").map(Number);
 	window.sorts_play=function(){
 		return plays_index;
@@ -11,6 +13,17 @@ async function data_read() {
 	window.sorts_plays=function(){
 		return plays_total;
 	}
+
+	const rates = text[1].split(";");
+	const rates_index = rates[0].split(" ").map(Number);
+	window.sorts_rate=function(){
+		return rates_index;
+	}
+	const rates_total = rates[1].split(" ").map(Number);
+	window.sorts_rates=function(){
+		return rates_total;
+	}
+
 	<!-- -->
 }
 data_read();
