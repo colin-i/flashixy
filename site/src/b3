@@ -85,9 +85,11 @@
       if (!ins) ref = doc(db, game, "a");
 
       const snap = await getDoc(ref);
-      let rate = snap.data().rate;
-      if(rate){
-        window.Game.player.onRateLoaded(rate);
+      if(snap.exists()){//authenticated users
+        let rate = snap.data().rate;
+        if(rate){
+          window.Game.player.onRateLoaded(rate);
+        }
       }
   }
 

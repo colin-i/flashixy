@@ -28,9 +28,9 @@
     doc,
     getDoc,
     getFirestore,
+    increment,
     runTransaction,
-    setDoc,
-    writeBatch
+    setDoc
   } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
 <!-- -->
@@ -153,37 +153,44 @@
     const ans = prompt("Type 'yes' to permanently delete account:");
     if (ans != "yes") return;
     try {
-      // delete rest of the entries. get current username
       const name = await get_name();
-      if (name) {
-        const batch = writeBatch(db);
-        // delete username reservation
-        const usernameRef = doc(db, "usernames", name);
-        batch.delete(usernameRef);
-        // delete profile document
-        batch.delete(nameRef);
-        // commit all operations atomically
-        await batch.commit();
-        document.getElementById("account").textContent = "";//more at deleteUser
-      }
-      // cannot play by keeping deleted uids, they can be regenerated
-      const oldRef = doc(db, "Chambers", auth.currentUser.uid);
-      const oldSnap = await getDoc(oldRef);
-      if (oldSnap.exists()) {
-        const batch = writeBatch(db);
-        const orphanRef = doc(collection(db, "orphanScores"));
-        batch.set(orphanRef, {
-            game: "Chambers",
-            score: oldSnap.data().score
-        });
-        batch.delete(oldRef);
-        await batch.commit();
-      }
+      await runTransaction(db, async (transaction) => {
+        if (name) {
+          const usernameRef = doc(db, "usernames", name);
+          transaction.delete(usernameRef);
+          transaction.delete(nameRef);
+        }
+        const oldRef = doc(db, "Chambers", auth.currentUser.uid);
+        const oldSnap = await transaction.get(oldRef);
+        if (oldSnap.exists()) {
+          const data = oldSnap.data();
+          if(data.score != undefined){
+            // cannot play by keeping deleted uids, they can be regenerated
+            const orphanRef = doc(collection(db, "orphanScores"));
+            transaction.set(orphanRef, {
+              game: "Chambers",
+              score: data.score
+            });
+          }
+          if (data.rate != undefined) {
+            const starsSumRef = doc(db, "plays", "stars_sum");
+            transaction.update(starsSumRef, {
+              Chambers: increment(-data.rate)
+            });
+            const starsRef = doc(db, "plays", "stars");
+            transaction.update(starsRef, {
+              Chambers: increment(-1)
+            });
+          }
+          transaction.delete(oldRef);
+        }
+      });
       // delete auth account
       //    this is last because there is a Rule that the user must be authenticated
-      await deleteUser(auth.currentUser);//not in batch because Auth and Firestore are separate systems.
       //    it has a chance to fail if the login is not recent (same session)
+      if (name) document.getElementById("account").textContent = "";
       //    this is at limit, only the owner can delete it's own name/scores, but then it can fail to delete the main account...
+      await deleteUser(auth.currentUser);//not in batch because Auth and Firestore are separate systems.
       // print message
       gameDiv.textContent = "Account deleted";
     } catch (e) {
