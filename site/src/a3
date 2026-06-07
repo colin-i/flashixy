@@ -6,8 +6,7 @@ window.onSwfReady = function() {
 try{
     const ruffle = window.RufflePlayer.newest();
     const player = ruffle.createPlayer();
-    player.style.width = "100%";
-    player.style.height = "100%";
+    player.style = "width: 100%; height: 100%";
     document.getElementById("game").appendChild(player);
     <!-- -->
 } catch (err) {

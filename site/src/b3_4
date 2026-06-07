@@ -1,0 +1,9 @@
+
+async function data_read2() {
+	await data_read();
+	<!-- -->
+	setTimeout(() => {//else is null right after that
+		window.Game.player = document.querySelector("ruffle-embed");// for js->as callback
+	}, 2000);
+}
+data_read2();

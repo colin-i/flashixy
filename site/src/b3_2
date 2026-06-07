@@ -1,4 +1,8 @@
-window.Game.player = player;// for js->as callback
+//at android first click on swf full size problem
+document.getElementById("game").style="position: fixed;top: 20px;left: 0;right: 0;bottom: 0;";
+
+window.Game = {};//for js->as callback
+
 async function data_read() {
 	const response = await fetch("plays.txt");
 	const txt = await response.text();
@@ -23,7 +27,4 @@ async function data_read() {
 	window.sorts_rates=function(){
 		return rates_total;
 	}
-
-	<!-- -->
 }
-data_read();

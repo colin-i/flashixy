@@ -28,10 +28,10 @@ index.html
 		s1
 		s2
 		a3
+			b3_2
 			b3_3
-			b3_2
 				a3_2
-			b3_2
+			b3_4
 				a3_3
 #d ln
 member.html
