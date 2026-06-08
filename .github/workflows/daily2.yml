@@ -26,6 +26,7 @@ jobs:
       mkdir artifact
       # get latest successful run of daily.yml
       RUN_ID=$(gh run list \
+       --repo colin-i/flashixy \
        --workflow daily.yml \
        --status success \
        --limit 1 \
@@ -34,6 +35,7 @@ jobs:
       echo "Latest run: $RUN_ID"
       # download artifact named plays.txt
       gh run download "$RUN_ID" \
+       --repo colin-i/flashixy \
        --name plays.txt \
        --dir artifact
    - name: test1
