@@ -3,6 +3,7 @@ from pathlib import Path
 import pygame
 import time
 import tkinter as tk
+import wave
 
 NOTES = ["DO", "RE", "MI", "FA", "SOL", "LA", "SI", "DOH"]
 SOUND_DIR = Path.home() / "games" / "active" / "solfegiu"
@@ -17,12 +18,18 @@ CLEANUP_Y=2*ROW_BOX_H
 
 pygame.mixer.init()
 
-SOUNDS = {
-    note: pygame.mixer.Sound(
-        str(SOUND_DIR / f"{note}.wav")
-    )
-    for note in NOTES
-}
+SOUNDS = {}
+PCM = {}
+
+with wave.open(str(SOUND_DIR / NOTES[0])+".wav", "rb") as w:
+	channels = w.getnchannels()
+	sample_width = w.getsampwidth()   # bytes/sample
+	sample_rate = w.getframerate()
+for note in NOTES:
+    path = SOUND_DIR / f"{note}.wav"
+    SOUNDS[note] = pygame.mixer.Sound(str(path))
+    with wave.open(str(path), "rb") as w:
+        PCM[note] = w.readframes(w.getnframes())
 
 class Row:
     def __init__(self, canvas, note):
@@ -78,101 +85,152 @@ class Row:
      return b
 
 class App:
-    def __init__(self, root):
-        self.root = root
-        self.root.attributes("-fullscreen", True)
+	def __init__(self, root):
+		self.root = root
+		self.root.attributes("-fullscreen", True)
 
-        self.canvas = tk.Canvas(root, bg="black")
-        self.canvas.pack(fill="both", expand=True)
+		self.canvas = tk.Canvas(root, bg="black")
+		self.canvas.pack(fill="both", expand=True)
 
-        self.rows = []
+		self.rows = []
+		self.recording = []
 
-        self.bottom_frame = tk.Frame(root, height=100)
-        self.bottom_frame.pack(side="bottom", fill="x")
+		self.topbar = tk.Frame(self.canvas, bg="black")
+		self.topbar.place(relx=0, rely=0, relwidth=1, height=50)
 
-        self.create_buttons()
+		self.duration_label = tk.Label(
+			self.topbar,
+			text="0.00 s",
+			bg="black",
+			fg="white",
+			font=("Arial", 24, "bold")
+		)
+		self.duration_label.pack()
+		self.total_duration = 0.0
+		self.active_row = None
 
-        self.duration_text = self.canvas.create_text(
-         100, 20,
-         text="0.00 s",
-         fill="white",
-         font=("Arial", 24, "bold"),
-         anchor="n"
-        )
-        self.total_duration = 0.0
-        self.active_row = None
+		self.save_button = tk.Button(
+			self.topbar,
+			text="Save as a.wav",
+			command=self.save_recording
+		)
+		self.save_button.place(
+			relx=1.0,
+			x=-90,
+			y=10,
+			anchor="ne"
+		)
 
-        self.root.after(30, self.loop)
+		self.exit_button = tk.Button(
+			self.topbar,
+			text="Exit",
+			command=self.root.destroy
+		)
+		self.exit_button.place(relx=1.0, x=-10, y=10, anchor="ne")
 
-    def create_buttons(self):
-        for note in NOTES:
-            b = tk.Button(
-                self.bottom_frame,
-                text=note,
-                height=4,
-                command=lambda n=note: self.press(n)
-            )
-            b.pack(side="left", fill="x", expand=True)
+		self.bottom_frame = tk.Frame(root, height=100)
+		self.bottom_frame.pack(side="bottom", fill="x")
 
-    def press(self, note):
-     SOUNDS[note].play()
+		self.create_buttons()
 
-     # create new active row
-     new_row = Row(self.canvas, note)  # y will be recalculated
+		self.root.after(30, self.loop)
 
-     self.duration_update()
-     self.active_row = new_row
+	def create_buttons(self):
+		for note in NOTES:
+			b = tk.Button(
+				self.bottom_frame,
+				text=note,
+				height=4,
+				command=lambda n=note: self.press(n)
+			)
+			b.pack(side="left", fill="x", expand=True)
 
-     self.rows.append(new_row)
+	def press(self, note):
+		SOUNDS[note].play()
 
-     # re-layout EVERYTHING
+		# create new active row
+		new_row = Row(self.canvas, note)  # y will be recalculated
 
-     h = self.canvas.winfo_height()
-     w = self.canvas.winfo_width()
+		self.duration_update()
+		self.active_row = new_row
 
-     base_y = h - BOTTOM_PAD
-     cx = w / 2
+		self.rows.append(new_row)
 
-     for i, r in enumerate(self.rows):
-        y = base_y - (len(self.rows) - 1 - i) * ROW_H
+		# re-layout EVERYTHING
 
-        r.y = y #for update, and with this use also for cleanup
+		h = self.canvas.winfo_height()
+		w = self.canvas.winfo_width()
 
-        # full width background
-        self.canvas.coords(r.bg, 0, y, w, y + ROW_BOX_H)
+		base_y = h - BOTTOM_PAD
+		cx = w / 2
 
-        # full width progress fill
-        self.canvas.coords(r.fill, 0, y, w * r.progress, y + ROW_BOX_H)
+		for i, r in enumerate(self.rows):
+			y = base_y - (len(self.rows) - 1 - i) * ROW_H
 
-        # centered text
-        self.canvas.coords(r.shadow, cx + 1, y + SHADOW_Y)
-        self.canvas.coords(r.text, cx, y + TEXT_Y)
+			r.y = y #for update, and with this use also for cleanup
 
-     if self.rows[0].y < CLEANUP_Y:
-      r = self.rows.pop(0)
+			# full width background
+			self.canvas.coords(r.bg, 0, y, w, y + ROW_BOX_H)
 
-      self.canvas.delete(r.bg)
-      self.canvas.delete(r.fill)
-      self.canvas.delete(r.text)
-      self.canvas.delete(r.shadow)
+			# full width progress fill
+			self.canvas.coords(r.fill, 0, y, w * r.progress, y + ROW_BOX_H)
 
-    def duration_update(self):
-         if self.active_row:
-          self.total_duration += self.active_row.progress * DURATION
-          self.active_row = None
-          self.canvas.itemconfig(
-           self.duration_text, text=f"{self.total_duration:.2f} s"
-          )
+			# centered text
+			self.canvas.coords(r.shadow, cx + 1, y + SHADOW_Y)
+			self.canvas.coords(r.text, cx, y + TEXT_Y)
 
-    def loop(self):
-     w = self.canvas.winfo_width()
+		if self.rows[0].y < CLEANUP_Y:
+			r = self.rows.pop(0)
 
-     # update only active row (fast)
-     if self.rows:
-        if self.rows[-1].update(w):
-         self.duration_update()
+			self.canvas.delete(r.bg)
+			self.canvas.delete(r.fill)
+			self.canvas.delete(r.text)
+			self.canvas.delete(r.shadow)
 
-     self.root.after(100, self.loop)
+	def duration_update(self):
+		if self.active_row:
+			self.total_duration += self.active_row.progress * DURATION
+			self.recording.append(
+				(self.active_row.note, self.active_row.progress)
+			)
+
+			self.active_row = None
+			self.duration_label.config(
+				text=f"{self.total_duration:.2f} s"
+			)
+
+	def save_recording(self):
+		print("Saving:")
+		print("channels "+str(channels)+", rate "+str(sample_rate)+", width "+str(sample_width))
+
+		pcm_out = bytearray()
+		frame_size = channels * sample_width
+		for note, progress in self.recording:
+			duration = progress * DURATION
+			print(note, duration)
+
+			wanted_frames = int(sample_rate * duration)
+			pcm = PCM[note]
+			pcm_out.extend(
+				pcm[:wanted_frames * frame_size]
+			)
+
+		with wave.open("a.wav", "wb") as w:
+			w.setnchannels(channels)
+			w.setsampwidth(sample_width)
+			w.setframerate(sample_rate)
+
+			w.writeframes(pcm_out)
+
+	def loop(self):
+		w = self.canvas.winfo_width()
+
+		# update only active row (fast)
+		if self.rows:
+			if self.rows[-1].update(w):
+				self.duration_update()
+
+		self.root.after(100, self.loop)
 
 
 if __name__ == "__main__":
