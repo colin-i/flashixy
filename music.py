@@ -1,6 +1,9 @@
 
+from evdev import InputDevice, list_devices, ecodes #for touch
+import os
 from pathlib import Path
 import pygame
+import threading  #for touch
 import time
 import tkinter as tk
 import wave
@@ -73,7 +76,7 @@ class Row:
      b = False
      if self.progress >= 1:
       b = True
-      self.progress = 1 # also used at press recalculations
+      self.progress = 1 # also used at press and drawings
 
      self.canvas.coords(
         self.fill,
@@ -135,14 +138,59 @@ class App:
 
 		self.root.after(30, self.loop)
 
+	#these are for touches
+	def find_touch_device(self):
+	    #return InputDevice("/dev/input/event6") this is changing between restarts # xinput list # xinput list-props N
+	    for path in list_devices():
+	        dev = InputDevice(path)
+	        if dev.name == "SYNA7508:00 06CB:12A4":
+	            return dev
+	    raise RuntimeError("Touch device not found")
+	def evdev_loop(self):
+		for event in self.touch_device.read_loop():
+			# TOUCH DOWN - is one touch delayed, EV_ABS is coming after this
+			#if event.type == ecodes.EV_KEY and event.code == 330 and event.value == 1:
+			#	self.handle_touch_down()
+			if event.type == ecodes.EV_ABS:
+			    if event.code == ecodes.ABS_X:
+			        self.touch_x = event.value
+			# TOUCH UP
+			elif event.type == ecodes.EV_KEY and event.code == 330 and event.value == 0:
+				self.handle_touch_down()
+	def handle_touch_down(self):
+	    #if not hasattr(self, "touch_x"):
+	    #    return
+	    # normalize 0..1
+	    norm = (self.touch_x - self.min_x) / (self.max_x - self.min_x)
+	    #
+	    #norm = max(0.0, min(1.0, norm))
+	    index = int(norm * len(NOTES))
+	    #if index >= len(NOTES):
+	    #    index = len(NOTES) - 1
+	    note = NOTES[index]
+	    self.root.after(0, lambda: self.press(note))
+
+
 	def create_buttons(self):
+		is_mouse=os.environ.get("mouse")
+		if not is_mouse:
+			#also need to sudo usermod -aG input $USER , else, with sudo audo will not work. again, user must be in 'input' group, test with 'groups' after reboot
+			self.touch_device = self.find_touch_device()
+			absinfo = self.touch_device.absinfo(ecodes.ABS_X)
+			self.min_x = absinfo.min
+			self.max_x = absinfo.max
+			self.touch_thread = threading.Thread(target=self.evdev_loop, daemon=True)
+			self.touch_thread.start()
+
 		for note in NOTES:
 			b = tk.Button(
 				self.bottom_frame,
 				text=note,
 				height=4,
-				command=lambda n=note: self.press(n)
+				#command=lambda n=note: self.press(n)
 			)
+			if is_mouse:
+				b.bind("<ButtonPress-1>", lambda e, n=note: self.press(n))
 			b.pack(side="left", fill="x", expand=True)
 
 	def press(self, note):
