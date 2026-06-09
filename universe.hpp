@@ -297,7 +297,7 @@ int static_text_submit(int bound_width,EditText ed,char*initialtext){
 	int text_id=swf_text(bound_width,hg,"",(HasFont|HasText|HasTextColor|NoSelect|ReadOnly),&ed);
 	return text_id;
 }
-void submitform(int deffont,char*nume,char*returner,char*la_load_extra=NULL,bool is_flashixy=false){
+void submitform(int deffont,char*nume,char*returner,char*la_load_extra=NULL){//,bool is_flashixy=false
 	int submit_width=540;
 	int submit_height=380;
 
@@ -388,7 +388,7 @@ void submitform(int deffont,char*nume,char*returner,char*la_load_extra=NULL,bool
 //			kongregate.stats.submit('Highscore',s);
 //			kongregate.stats.submit('History',s);
 			flash.external.ExternalInterface.call('submitScore','Highscore',s);
-			flash.external.ExternalInterface.call('submitScore','History',s);
+//			flash.external.ExternalInterface.call('submitScore','History',s);
 		)");
 		//g1="var game_name='";
 		//g2="';";stats="'Highscore'";
@@ -400,7 +400,7 @@ void submitform(int deffont,char*nume,char*returner,char*la_load_extra=NULL,bool
 //			kongregate.stats.submit(name_text+' History',s)
 			flash.external.ExternalInterface.call('submitScore',name_text,s);
 		)");
-		if(!is_flashixy)action_sprite(submitsprite,"flash.external.ExternalInterface.call('submitScore',name_text+' History',s)");
+//		if(!is_flashixy)action_sprite(submitsprite,"flash.external.ExternalInterface.call('submitScore',name_text+' History',s)");
 		//g1="";
 		//nume=g1;//g2=g1;stats="_root.strip_underscores(game_name)";
 	}

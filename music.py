@@ -152,16 +152,18 @@ class App:
 			#if event.type == ecodes.EV_KEY and event.code == 330 and event.value == 1:
 			#	self.handle_touch_down()
 			if event.type == ecodes.EV_ABS:
-			    if event.code == ecodes.ABS_X:
-			        self.touch_x = event.value
+				if event.code == ecodes.ABS_X:
+					if not self.pressed:
+						self.handle_touch_down(event.value)
+						self.pressed=True
 			# TOUCH UP
 			elif event.type == ecodes.EV_KEY and event.code == 330 and event.value == 0:
-				self.handle_touch_down()
-	def handle_touch_down(self):
+				self.pressed=False
+	def handle_touch_down(self,touch_x):
 	    #if not hasattr(self, "touch_x"):
 	    #    return
 	    # normalize 0..1
-	    norm = (self.touch_x - self.min_x) / (self.max_x - self.min_x)
+	    norm = (touch_x - self.min_x) / (self.max_x - self.min_x)
 	    #
 	    #norm = max(0.0, min(1.0, norm))
 	    index = int(norm * len(NOTES))
@@ -179,6 +181,7 @@ class App:
 			absinfo = self.touch_device.absinfo(ecodes.ABS_X)
 			self.min_x = absinfo.min
 			self.max_x = absinfo.max
+			self.pressed=False
 			self.touch_thread = threading.Thread(target=self.evdev_loop, daemon=True)
 			self.touch_thread.start()
 
