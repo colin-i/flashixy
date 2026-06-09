@@ -1,9 +1,12 @@
 
-from evdev import InputDevice, list_devices, ecodes #for touch
 import os
+is_mouse=os.environ.get("mouse")
+
+if not is_mouse:
+	from evdev import InputDevice, list_devices, ecodes
+	import threading
 from pathlib import Path
 import pygame
-import threading  #for touch
 import time
 import tkinter as tk
 import wave
@@ -11,7 +14,7 @@ import wave
 NOTES = ["DO", "RE", "MI", "FA", "SOL", "LA", "SI", "DOH"]
 SOUND_DIR = Path.home() / "games" / "active" / "solfegiu"
 
-DURATION = 2  # seconds
+DURATION = 1  # seconds
 ROW_H = 45
 BOTTOM_PAD = 120
 ROW_BOX_H = 40
@@ -97,6 +100,7 @@ class App:
 
 		self.rows = []
 		self.recording = []
+		self.duration_state = DURATION
 
 		self.topbar = tk.Frame(self.canvas, bg="black")
 		self.topbar.place(relx=0, rely=0, relwidth=1, height=50)
@@ -108,52 +112,47 @@ class App:
 			fg="white",
 			font=("Arial", 24, "bold")
 		)
-		self.duration_label.pack()
+		self.duration_label.place(relx=0.5, rely=0.5, anchor="center")
 		self.total_duration = 0.0
 		self.active_row = None
 
-		self.exit_button = tk.Button(
-			self.topbar,
-			text="Exit",
-			command=self.root.destroy
-		)
-		self.exit_button.place(relx=1.0, x=-10, y=10, anchor="ne")
+		self.button_bar = tk.Frame(self.topbar, bg="black")
+		self.button_bar.pack(side="right", padx=10, pady=5)
 
 		self.save_button = tk.Button(
-			self.topbar,
+			self.button_bar,
 			text="Save as a.wav",
 			command=self.save_recording
 		)
-		self.save_button.place(
-			relx=1.0,
-			x=-100,
-			y=10,
-			anchor="ne"
-		)
+		self.save_button.pack(side="left", padx=5)
 
 		self.reset_button = tk.Button(
-		    self.topbar,
+		    self.button_bar,
 		    text="Reset",
 		    command=self.reset
 		)
-		self.reset_button.place(
-		    relx=1.0,
-		    x=-250,
-		    y=10,
-		    anchor="ne"
+		self.reset_button.pack(side="left", padx=5)
+
+		self.duration_button = tk.Button(
+		    self.button_bar,
+		    text="DUR: 1s",
+		    command=self.toggle_duration
 		)
+		self.duration_button.pack(side="left", padx=5)
 
 		self.minimize_button = tk.Button(
-		    self.topbar,
+		    self.button_bar,
 		    text="Minimize",
 		    command=self.root.iconify
 		)
-		self.minimize_button.place(
-		    relx=1.0,
-		    x=-350,
-		    y=10,
-		    anchor="ne"
+		self.minimize_button.pack(side="left", padx=5)
+
+		self.exit_button = tk.Button(
+			self.button_bar,
+			text="Exit",
+			command=self.root.destroy
 		)
+		self.exit_button.pack(side="left", padx=5)
 
 		self.bottom_frame = tk.Frame(root, height=100)
 		self.bottom_frame.pack(side="bottom", fill="x")
@@ -198,7 +197,6 @@ class App:
 
 
 	def create_buttons(self):
-		is_mouse=os.environ.get("mouse")
 		if not is_mouse:
 			#also need to sudo usermod -aG input $USER , else, with sudo audo will not work. again, user must be in 'input' group, test with 'groups' after reboot
 			self.touch_device = self.find_touch_device()
@@ -264,9 +262,10 @@ class App:
 
 	def duration_update(self):
 		if self.active_row:
-			self.total_duration += self.active_row.progress * DURATION
+			real_duration = self.active_row.progress * DURATION
+			self.total_duration += real_duration
 			self.recording.append(
-				(self.active_row.note, self.active_row.progress)
+				(self.active_row.note, real_duration)
 			)
 
 			self.active_row = None
@@ -280,8 +279,7 @@ class App:
 
 		pcm_out = bytearray()
 		frame_size = channels * sample_width
-		for note, progress in self.recording:
-			duration = progress * DURATION
+		for note, duration in self.recording:
 			print(note, duration)
 
 			wanted_frames = int(sample_rate * duration)
@@ -311,6 +309,13 @@ class App:
 
 	    self.total_duration = 0.0
 	    self.duration_label.config(text="0.00 s")
+
+	def toggle_duration(self):
+	    self.duration_state = 2 if self.duration_state == 1 else 1
+	    global DURATION
+	    DURATION = self.duration_state
+
+	    self.duration_button.config(text=f"DUR: {DURATION}s")
 
 	def loop(self):
 		w = self.canvas.winfo_width()
