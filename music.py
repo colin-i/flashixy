@@ -112,6 +112,13 @@ class App:
 		self.total_duration = 0.0
 		self.active_row = None
 
+		self.exit_button = tk.Button(
+			self.topbar,
+			text="Exit",
+			command=self.root.destroy
+		)
+		self.exit_button.place(relx=1.0, x=-10, y=10, anchor="ne")
+
 		self.save_button = tk.Button(
 			self.topbar,
 			text="Save as a.wav",
@@ -119,17 +126,34 @@ class App:
 		)
 		self.save_button.place(
 			relx=1.0,
-			x=-90,
+			x=-100,
 			y=10,
 			anchor="ne"
 		)
 
-		self.exit_button = tk.Button(
-			self.topbar,
-			text="Exit",
-			command=self.root.destroy
+		self.reset_button = tk.Button(
+		    self.topbar,
+		    text="Reset",
+		    command=self.reset
 		)
-		self.exit_button.place(relx=1.0, x=-10, y=10, anchor="ne")
+		self.reset_button.place(
+		    relx=1.0,
+		    x=-250,
+		    y=10,
+		    anchor="ne"
+		)
+
+		self.minimize_button = tk.Button(
+		    self.topbar,
+		    text="Minimize",
+		    command=self.root.iconify
+		)
+		self.minimize_button.place(
+		    relx=1.0,
+		    x=-350,
+		    y=10,
+		    anchor="ne"
+		)
 
 		self.bottom_frame = tk.Frame(root, height=100)
 		self.bottom_frame.pack(side="bottom", fill="x")
@@ -272,6 +296,21 @@ class App:
 			w.setframerate(sample_rate)
 
 			w.writeframes(pcm_out)
+
+	def reset(self):
+	    self.duration_update()  # optional, to reset active_row
+
+	    for r in self.rows:
+	        self.canvas.delete(r.bg)
+	        self.canvas.delete(r.fill)
+	        self.canvas.delete(r.text)
+	        self.canvas.delete(r.shadow)
+
+	    self.rows.clear()
+	    self.recording.clear()
+
+	    self.total_duration = 0.0
+	    self.duration_label.config(text="0.00 s")
 
 	def loop(self):
 		w = self.canvas.winfo_width()
