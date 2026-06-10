@@ -126,6 +126,13 @@ class App:
 		)
 		self.save_button.pack(side="left", padx=5)
 
+		self.save_from_txt = tk.Button(
+			self.button_bar,
+			text="From a.txt",
+			command=self.save_from_text
+		)
+		self.save_from_txt.pack(side="left", padx=5)
+
 		self.reset_button = tk.Button(
 		    self.button_bar,
 		    text="Reset",
@@ -278,22 +285,44 @@ class App:
 		print("channels "+str(channels)+", rate "+str(sample_rate)+", width "+str(sample_width))
 
 		pcm_out = bytearray()
+		total_duration = 0.0
 		frame_size = channels * sample_width
-		for note, duration in self.recording:
-			print(note, duration)
+		with open("a.txt", "w") as txt:
+			for note, duration in self.recording:
+				total_duration += duration
+				print(note, duration, total_duration)
+				txt.write(f"{note} {duration:.6f} {total_duration:.6f}\n")
 
-			wanted_frames = int(sample_rate * duration)
-			pcm = PCM[note]
-			pcm_out.extend(
-				pcm[:wanted_frames * frame_size]
-			)
+				wanted_frames = int(sample_rate * duration)
+				pcm = PCM[note]
+				pcm_out.extend(
+					pcm[:wanted_frames * frame_size]
+				)
 
-		with wave.open("a.wav", "wb") as w:
-			w.setnchannels(channels)
-			w.setsampwidth(sample_width)
-			w.setframerate(sample_rate)
+		self.save_wav(pcm_out)
 
-			w.writeframes(pcm_out)
+	def save_from_text(self):
+		pcm_out = bytearray()
+		frame_size = channels * sample_width
+		#total_duration = 0.0;with open("b.txt", "w") as txt:
+		with open("a.txt") as f:
+			for line in f:
+				note, duration, _ = line.split()
+				duration = float(duration)
+				#total_duration += duration;txt.write(f"{note} {duration:.6f} {total_duration:.6f}\n")
+				wanted_frames = int(sample_rate * duration)
+				pcm = PCM[note]
+				pcm_out.extend(
+					pcm[:wanted_frames * frame_size]
+				)
+		self.save_wav(pcm_out)
+
+	def save_wav(self,pcm_out):
+	    with wave.open("a.wav", "wb") as w:
+	        w.setnchannels(channels)
+	        w.setsampwidth(sample_width)
+	        w.setframerate(sample_rate)
+	        w.writeframes(pcm_out)
 
 	def reset(self):
 	    self.duration_update()  # optional, to reset active_row
