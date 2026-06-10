@@ -14,4 +14,5 @@
   const db = getFirestore(app);
 
 //import { connectFirestoreEmulator } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
-//connectFirestoreEmulator(db, "127.0.0.1", 8080);
+//connectFirestoreEmulator(db, "192.168.1.11", 8080);
+//window.tester=function(a){alert(a);}

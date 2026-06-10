@@ -307,18 +307,22 @@ int main(int argc,char**argv){
 
 		dbl=swf_img("../tmp/root/star.dbl");
 		swf_exports_add(dbl,"bar_star");
-		dbl=swf_img("../tmp/root/star-empty.dbl");
-		swf_exports_add(dbl,"bar_star_empty");
+		dbl=swf_img("../tmp/root/s1.dbl");swf_exports_add(dbl,"bar_s1");
+		dbl=swf_img("../tmp/root/s2.dbl");swf_exports_add(dbl,"bar_s2");
+		dbl=swf_img("../tmp/root/s3.dbl");swf_exports_add(dbl,"bar_s3");
+		dbl=swf_img("../tmp/root/s4.dbl");swf_exports_add(dbl,"bar_s4");
+		dbl=swf_img("../tmp/root/s5.dbl");swf_exports_add(dbl,"bar_s5");
 		presprite=swf_sprite_new();
 		action_sprite(presprite,R"(
 			var mx=new flash.geom.Matrix();
 			if(star)var bmp=flash.display.BitmapData.loadBitmap('bar_star');
-			else var bmp=flash.display.BitmapData.loadBitmap('bar_star_empty');
+			else var bmp=flash.display.BitmapData.loadBitmap('bar_s'+rate);
 			var wd=bmp.width;var hg=bmp.height;
 			beginBitmapFill(bmp,mx,false);
 			lineTo(wd,0);lineTo(wd,hg);
 			lineTo(0,hg);endFill();
-			_x=-i*wd;
+			//_x=-i*wd;
+			_y=rate*(hg*_root.bar.touch_factor);
 			delete bmp;
 		)");
 		swf_sprite_showframe(presprite);
@@ -339,7 +343,8 @@ int main(int argc,char**argv){
 						var mc=this.createEmptyMovieClip('stars',this.getNextHighestDepth());
 						for(var i=5;i>=1;){
 							var mv=mc.attachMovie('rate','rate'+i,mc.getNextHighestDepth());
-							mv.i=6-i;mv.rate=i;
+							mv.rate=i;
+							//mv.i=6-i;
 							if(i<=this.dbRate)mv.star=true;
 							i--;
 						}
@@ -378,7 +383,7 @@ int main(int argc,char**argv){
 		//under1="";under2="";
 		counterBarTestChar='=';
 		preview_prefix="";
-		bar_startPos=bar_coord+button_lat*(1+pointless_add);
+		bar_startPos=bar_coord+button_lat*(1+pointless_add)*(1+5);
 		text_x=list_unit_w/10;
 		rest_x=list_unit_w-text_x;
 	}
@@ -1279,7 +1284,7 @@ int main(int argc,char**argv){
 	action("createEmptyMovieClip('game',getNextHighestDepth());home_set();attachMovie('bar','bar',getNextHighestDepth())");
 	if (bar_x != 0){
 		actionf(buf,"bar_x=%u", bar_x);
-		touch_or_mouse(true);
+		touch_or_mouse(true,is_flashixy);
 		action("bar._x=bar_x");
 	}
 	if (bar_y != 0)actionf(buf, "bar._y=%u", bar_y);

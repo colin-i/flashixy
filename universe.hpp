@@ -446,7 +446,7 @@ int float_extract(double d,int*f){
 #define scale_at_game bar_dimensiune*scale_coef
 #define scale_at_bar 100*scale_factor
 
-void touch_or_mouse(bool is_universe){
+void touch_or_mouse(bool is_universe,bool is_flashixy=false){
 	char*s=R"(
 		if(flash.external.ExternalInterface.call('onSwfReady')){
 			function game_xscale_set(){
@@ -455,14 +455,18 @@ void touch_or_mouse(bool is_universe){
 			bar_x=bar_x-%u;
 			bar._xscale=%u;
 			game_xscale_set();
+			%s
 		}
+		%s
 	)";
 	double d=100*(width-scale_at_game);
 	d/=width;
 	int d_f;int d_i=float_extract(d,&d_f);
 	char bf[100];sprintf(bf,"game._xscale=%u.%u;",d_i,d_f);
-	if(is_universe)actionf(buf,s,bf,scale_at_x,scale_at_bar);
-	else din_buf_in_buf(s,bf,scale_at_x,scale_at_bar);
+	if(is_universe){
+		if(!is_flashixy)actionf(buf,s,bf,scale_at_x,scale_at_bar,"","");
+		else actionf(buf,s,bf,scale_at_x,scale_at_bar,"bar['touch_factor']=2;","bar['touch_factor']=1;");
+	}else din_buf_in_buf(s,bf,scale_at_x,scale_at_bar,"","");
 }
 
 #ifdef __cplusplus
