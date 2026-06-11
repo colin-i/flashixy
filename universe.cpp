@@ -72,22 +72,25 @@ int main(int argc,char**argv){
             draw_bmp(mc,dbl,button_lat,button_lat);
         }
         //
-        function add_button(button_name,description,uniquename){
-            var nm='bar_'+button_name;
-            var mc=createEmptyMovieClip(uniquename,getNextHighestDepth());
-            draw_desc_bmp(mc,nm);
-            var mv=_parent.attachMovie('barDescription',nm,_parent.getNextHighestDepth());
-            mv['desc']=description;mv._visible=false;mv['rel']=mc;
-            //
-            mc['description']=mv;
-            mc.onRollOver=function(){
-                this.description._visible=true;
-            }
-            mc.onRollOut=function(){
-                this.description._visible=false;
-            }
+		function add_button_ex(button_name,description,uniquename,bdepth){
+			var nm='bar_'+button_name;
+			var mc=createEmptyMovieClip(uniquename,bdepth);
+			draw_desc_bmp(mc,nm);
+			var mv=_parent.attachMovie('barDescription',nm,_parent.getNextHighestDepth());
+			mv['desc']=description;mv._visible=false;mv['rel']=mc;
+			//
+			mc['description']=mv;
+			mc.onRollOver=function(){
+				this.description._visible=true;
+			}
+			mc.onRollOut=function(){
+				this.description._visible=false;
+			}
 			mc._yscale=_xscale;//for pointless
-        }
+		}
+		function add_button(button_name,description,uniquename){
+			add_button_ex(button_name,description,uniquename,getNextHighestDepth());
+		}
 	)");
 	actionf_sprite(presprite,buf,R"(
 	function bar_button(shared,name,desc,distance,container,dflt,f_on,f_off){
@@ -251,8 +254,7 @@ int main(int argc,char**argv){
 
 	char*load_extern;
 	#define start_scenario_ante_sz 2000
-	char start_scenario_ante[start_scenario_ante_sz];
-	char*bar_star_at_exit;
+	char start_scenario_ante[start_scenario_ante_sz];char*bar_star_at_exit;char*bar_counter_depth;
 	char*start_scenario_post;
 	char*list_loaded;
 
@@ -273,7 +275,9 @@ int main(int argc,char**argv){
 	int text_x;int rest_x;
 
 	if(!is_flashixy){
-		load_extern="";*start_scenario_ante='\0';bar_star_at_exit="";start_scenario_post="";list_loaded="";location_mark="";//desc_height="";
+		load_extern="";
+		*start_scenario_ante='\0';bar_star_at_exit="";bar_counter_depth="getNextHighestDepth()";
+		start_scenario_post="";list_loaded="";location_mark="";//desc_height="";
 		//under1="_root.strip_underscores(";under2=")";
 		counterBarTestChar='>';
 		preview_prefix="'https://flashixy.com/'+";
@@ -330,7 +334,8 @@ int main(int argc,char**argv){
 
 		char*s=R"(
 			if(nm){
-				bar.add_button('star','Rate the game','star');
+				bar['counter_depth']=bar.getNextHighestDepth();
+				bar.add_button_ex('star','Rate the game','star',bar.counter_depth+1);//rating will popup over counterbar
 				var roll_store=bar.star.onRollOver;
 
 				bar.star['dbRate']=0;
@@ -369,6 +374,7 @@ int main(int argc,char**argv){
 			flash.external.ExternalInterface.addCallback("onRateLoaded",null,onRateLoaded);
 		)");
 		bar_star_at_exit="bar.star.removeMovieClip();";
+		bar_counter_depth="counter_depth";
 
 		start_scenario_post=R"(
 				flash.external.ExternalInterface.call('addPlay',singleTraining[pos]);
@@ -383,17 +389,17 @@ int main(int argc,char**argv){
 		//under1="";under2="";
 		counterBarTestChar='=';
 		preview_prefix="";
-		bar_startPos=bar_coord+button_lat*(1+pointless_add)*(1+5);
+		bar_startPos=bar_coord+button_lat*(1+pointless_add);//*(1+5);
 		text_x=list_unit_w/10;
 		rest_x=list_unit_w-text_x;
 	}
 
 	actionf(buf,R"(
         function counterBar_init(max_pos){
-            var mc=bar.attachMovie('counterBar','counterBar',bar.getNextHighestDepth());
+            var mc=bar.attachMovie('counterBar','counterBar',bar.%s);
             mc._%s=%u;mc['barNr']=0;mc['barMax']=max_pos;
         }
-	)",(bar_x<bar_y?"x":"y"),bar_startPos);
+	)",bar_counter_depth,(bar_x<bar_y?"x":"y"),bar_startPos);
 	actionf(buf,R"(
         function counterBar_step(){
 			counterBar_jump(1);
