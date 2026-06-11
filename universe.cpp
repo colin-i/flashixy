@@ -326,7 +326,7 @@ int main(int argc,char**argv){
 			lineTo(wd,0);lineTo(wd,hg);
 			lineTo(0,hg);endFill();
 			//_x=-i*wd;
-			_y=rate*(hg*_root.bar.touch_factor);
+			_y=_xscale/100*hg*rate;
 			delete bmp;
 		)");
 		swf_sprite_showframe(presprite);
@@ -1290,7 +1290,7 @@ int main(int argc,char**argv){
 	action("createEmptyMovieClip('game',getNextHighestDepth());home_set();attachMovie('bar','bar',getNextHighestDepth())");
 	if (bar_x != 0){
 		actionf(buf,"bar_x=%u", bar_x);
-		touch_or_mouse(true,is_flashixy);
+		touch_or_mouse(true);//,is_flashixy);
 		action("bar._x=bar_x");
 	}
 	if (bar_y != 0)actionf(buf, "bar._y=%u", bar_y);
