@@ -13,10 +13,10 @@ a member.html
 a scores.html
 
 cp x ../../index.html
-a x
+#a x
 
 cd ..
-mv ./x ../swf_backup/universe/index.html
+#mv ./x ../swf_backup/universe/index.html
 
 if [ -z "${no_min}" ]; then
 	cd ..
