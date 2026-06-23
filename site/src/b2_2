@@ -1,0 +1,7 @@
+<a href="https://flashixy.goatcounter.com" id="visitors"></a>
+<script>
+fetch("https://flashixy.goatcounter.com/counter/.json")
+  .then(r => r.json())
+  .then(d => document.getElementById("visitors").textContent = "Counter:" + d.count);
+</script>
+<img src="https://flashixy.goatcounter.com/count?p=/">

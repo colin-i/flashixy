@@ -23,6 +23,7 @@ index.html
 		b0
 	b1
 	b2
+		b2_2
 		a2
 	b3
 		s1
@@ -38,6 +39,7 @@ member.html
 	b0
 	b1
 	b2
+		blank
 		a2
 	d3
 		s1
@@ -48,6 +50,7 @@ scores.html
 	b0
 	b1
 	b2
+		blank
 		a2
 	e3
 		s1

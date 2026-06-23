@@ -12,7 +12,7 @@ a index.html
 a member.html
 a scores.html
 
-cp x ../../index.html
+mv x ../../index.html
 #a x
 
 cd ..
