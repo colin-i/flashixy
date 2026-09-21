@@ -1272,9 +1272,8 @@ int main(int argc,char**argv){
 
 	action("var start_time");
 
-	submitform(defFont,NULL,R"(
-		_root.start_scenario(_root.game.episode_number)
-	)",NULL);//,is_flashixy t race(game_name);
+	sprintf(buf,"%s%s",(is_flashixy?"_root.bar.star.removeMovieClip();":""),"_root.start_scenario(_root.game.episode_number)");
+	submitform(defFont,NULL,buf,NULL);
 
 	//com
 	//asta era cand erau toate: shared_write();
