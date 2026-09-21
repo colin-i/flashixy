@@ -311,7 +311,7 @@ void submitform(int deffont,char*nume,char*returner,char*la_load_extra=NULL){//,
 	int text_font_height=20;
 	int a=sizeof(EditText);
 	EditText ed;memset(&ed,0,a);ed.fontid=deffont;
-	EditText ed2;memset(&ed,0,a);ed2.fontid=deffont;ed2.font_height=text_font_height;
+	EditText ed2;memset(&ed2,0,a);ed2.fontid=deffont;ed2.font_height=text_font_height;
 
 	int text_handler=static_text_submit(left_name,ed2,"Title");
 
