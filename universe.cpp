@@ -667,53 +667,50 @@ int main(int argc,char**argv){
     //
     presprite=swf_sprite_new();
     actionf_sprite(presprite,buf,"_x=%u;_y=%u",key_x,key_y);
-    actionf_sprite(presprite,buf,"var key_unit_h=%u;var key_nr=%u",key_unit_h,key_nr);
-    action_sprite(presprite,R"(
-        var com=_root['shared_level'];
-        var i;var key_nr=_root.text_names.length;
-        i=0;while(i<key_nr){
-		if(!com[_root.key_names[i]]){//undefined sau getCode, care e Number, '0' e 48, 0 e la inceput cand nu s-a apasat pe nimic
-		// getCode This method returns 0 if no key was pressed or released, or if the key code is not accessible for security reasons.
-			com[_root.key_names[i]]=_root.key_default_code[i];
+    actionf_sprite(presprite,buf,"var key_unit_h=%u",key_unit_h);
+	action_sprite(presprite,R"(
+		var com=_root['shared_level'];
+		var key_nr=_root.text_names.length;
+		var new_key_mc;
+		var yPos=0;
+		var i=0;while(i<key_nr){
+			if(!com[_root.key_names[i]]){//undefined sau getCode, care e Number, '0' e 48, 0 e la inceput cand nu s-a apasat pe nimic
+			// getCode This method returns 0 if no key was pressed or released, or if the key code is not accessible for security reasons.
+				com[_root.key_names[i]]=_root.key_default_code[i];
+			}
+			var d=getNextHighestDepth();
+			var mc=attachMovie('keys_panel_entry','key'+d,d);mc._y=yPos;
+			mc['text_name']=_root.text_names[i];
+			mc['key_name']=_root.key_names[i];
+			mc.onPress=function(){
+				this.right_text='';
+				new_key_mc=this;
+			}
+			yPos+=key_unit_h;
+			i++;
 		}
-            i++;
-        }
-        //
-        var new_key_mc;
-        var yPos=0;
-        i=0;while(i<key_nr){
-            var d=getNextHighestDepth();
-            var mc=attachMovie('keys_panel_entry','key'+d,d);mc._y=yPos;
-            mc['text_name']=_root.text_names[i];
-            mc['key_name']=_root.key_names[i];
-            mc.onPress=function(){
-                this.right_text='';
-                new_key_mc=this;
-            }
-            yPos+=key_unit_h;i++;
-        }
-        var mc=attachMovie('keys_panel_ok','ok',getNextHighestDepth());mc._y=yPos;
-	Key.removeListener(_root.game.list_view.container.list_pages.continue_play);
-	Key.addListener(this);
-	mc.onPress=function(){
-		Key.removeListener(this._parent);
-		_root.game.list_view.container.list_pages.continue_play.readd();
-		removeMovieClip();
-	}
-	onKeyDown=function(){
-		if(new_key_mc){
-		//!=undefined
-			var code=Key.getCode();
-			var key_id=new_key_mc.key_name;
-			com[key_id]=code;
-			new_key_mc.right_text=new_key_mc.keycode_to_string(code);
-			new_key_mc=undefined;
-			//
-			com.so_keys.data[key_id]=code;
-			com.so_keys.flush();
+		var mc=attachMovie('keys_panel_ok','ok',getNextHighestDepth());mc._y=yPos;
+		Key.removeListener(_root.game.list_view.container.list_pages.continue_play);
+		Key.addListener(this);
+		mc.onPress=function(){
+			Key.removeListener(this._parent);
+			_root.game.list_view.container.list_pages.continue_play.readd();
+			removeMovieClip();
 		}
-	}
-    )");
+		onKeyDown=function(){
+			if(new_key_mc){
+			//!=undefined
+				var code=Key.getCode();
+				var key_id=new_key_mc.key_name;
+				com[key_id]=code;
+				new_key_mc.right_text=new_key_mc.keycode_to_string(code);
+				new_key_mc=undefined;
+				//
+				com.so_keys.data[key_id]=code;
+				com.so_keys.flush();
+			}
+		}
+	)");
     swf_sprite_showframe(presprite);
     sprite=swf_sprite_done(presprite);swf_exports_add(sprite,"keys_panel");
     //
