@@ -681,7 +681,7 @@ int main(int argc,char**argv){
 
 			if(!com[mc.key_name]){//undefined sau getCode, care e Number, '0' e 48, 0 e la inceput cand nu s-a apasat pe nimic
 			// getCode This method returns 0 if no key was pressed or released, or if the key code is not accessible for security reasons.
-				com[_root.key_names[i]]=_root.key_default_code[i];
+				com[mc.key_name]=_root.key_default_code[i];
 			}
 
 			mc.onPress=function(){
