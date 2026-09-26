@@ -674,14 +674,16 @@ int main(int argc,char**argv){
 		var new_key_mc;
 		var yPos=0;
 		var i=0;while(i<key_nr){
-			if(!com[_root.key_names[i]]){//undefined sau getCode, care e Number, '0' e 48, 0 e la inceput cand nu s-a apasat pe nimic
-			// getCode This method returns 0 if no key was pressed or released, or if the key code is not accessible for security reasons.
-				com[_root.key_names[i]]=_root.key_default_code[i];
-			}
 			var d=getNextHighestDepth();
 			var mc=attachMovie('keys_panel_entry','key'+d,d);mc._y=yPos;
 			mc['text_name']=_root.text_names[i];
 			mc['key_name']=_root.key_names[i];
+
+			if(!com[mc.key_name]){//undefined sau getCode, care e Number, '0' e 48, 0 e la inceput cand nu s-a apasat pe nimic
+			// getCode This method returns 0 if no key was pressed or released, or if the key code is not accessible for security reasons.
+				com[_root.key_names[i]]=_root.key_default_code[i];
+			}
+
 			mc.onPress=function(){
 				this.right_text='';
 				new_key_mc=this;
