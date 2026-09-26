@@ -18,7 +18,7 @@ if [ -z "${no_prep}" ]; then
 	cd ../swf_backup
 	#ca shared vrea ../img
 	if [ -z "${no_prep_run}" ]; then
-		${launcher} ../list/a.out
+		LD_PRELOAD=${ld_preload} ${launcher} ../list/a.out
 	fi
 else
 	cd ../swf_backup
@@ -29,7 +29,7 @@ if [ -z "${no_alt}" ]; then
 	rm ./${site}universe/universe.swf.log
 fi
 if [ -z "${no_string}" ]; then
-	${launcher} ../list/a.out x && \
+	LD_PRELOAD=${ld_preload} ${launcher} ../list/a.out x && \
 	cd ${site}universe && ../../dd universe
 	rm universe.swf.x
 fi

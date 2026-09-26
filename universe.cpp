@@ -722,11 +722,11 @@ int main(int argc,char**argv){
     #define ok_x key_unit_w/2
     EditText ok_text;
     ok_text.fontid=defFont;ok_text.font_height=keys_text_h;
-	ok_text.rgba=0x0000ffFF;
+	ok_text.rgba=0x0000ffFF;ok_text.initialtext="OK";
     presprite=swf_sprite_new();
-    text_entry=swf_text(key_unit_w-ok_x,key_unit_h,"ok_text",(HasFont|HasTextColor|ReadOnly|NoSelect),&ok_text);
+    text_entry=swf_text(key_unit_w-ok_x,key_unit_h,"",(HasFont|HasText|HasTextColor|ReadOnly|NoSelect),&ok_text);
     swf_sprite_placeobject_coords(presprite,text_entry,0,ok_x,0);
-    action_sprite(presprite,"_root.set_key_fill(this);ok_text='OK'");
+    action_sprite(presprite,"_root.set_key_fill(this)");
     swf_sprite_showframe(presprite);
     sprite=swf_sprite_done(presprite);swf_exports_add(sprite,"keys_panel_ok");
     //
