@@ -374,7 +374,8 @@ void submitform(int deffont,char*nume,char*returner,char*la_load_extra=NULL){//,
 	int free_space=(input_left-100-swf_shape_basic_border+1)/2;//+1 to round to the not dominant part
 	swf_sprite_placeobject_coords(submitsprite,stampsprite,depths,swf_shape_basic_border+free_space,submitform_y-50);depths++;
 
-	submitform_y+=20;
+	submitform_y+=(submit_height-submitform_y-entry_height-swf_shape_basic_border)/2;
+	//submitform_y+=20;
 
 	action_sprite(submitsprite,R"(
 		var kongregate=_global.kongregate;kongregate.services.connect();
@@ -412,7 +413,11 @@ void submitform(int deffont,char*nume,char*returner,char*la_load_extra=NULL){//,
 	int button_width=150;
 
 	//ButtonData bd = { 0x11FF11ff,10,0x11FF1188, 0xaa1122ff,10,0xaa112288, 0x1122FFff,10,0x1122FF88,24,24,"Submit",deffont,text_font_height,-(text_font_height/4),0xff,ac};
-	ButtonData bd = { 0x11FF11ff,10,0x11FF1188, 0xaa1122ff,10,0xaa112288, 0x1122FFff,10,0x1122FF88,24,24,"New Game",deffont,text_font_height,-(text_font_height/4),0xff,returner};
+	int efectiv_asta_face=-(text_font_height/4);//N=20 are baza jos, qypgj deja dau pe langa jos, iar total e doar 14 asa ca e ok -5
+		//o solutie am vazut ca e la actionscript acolo il pune bine, da' nu am chef
+	int button_ln_hg=10;
+	int maxim_de_curva=(entry_height-button_ln_hg)/2;//ca in interior la actionswf
+	ButtonData bd = { 0x11FF11ff,button_ln_hg,0x11FF1188, 0xaa1122ff,button_ln_hg,0xaa112288, 0x1122FFff,button_ln_hg,0x1122FF88,maxim_de_curva,maxim_de_curva,"New Game",deffont,text_font_height,efectiv_asta_face,0xff,returner};
 	//int submit=swf_button(button_width,entry_height,&bd);
 	//swf_sprite_placeobject_coords(submitsprite,submit,depths,margin,submitform_y);depths++;
 	int newgame=swf_button(button_width,entry_height,&bd);//swf_button_last("New Game",returner);
