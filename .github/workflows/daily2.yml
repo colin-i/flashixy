@@ -24,15 +24,18 @@ jobs:
       GH_TOKEN: ${{ secrets.PAT }}
      run: |
       mkdir artifact
-      # get latest successful run of daily.yml
-      RUN_ID=$(gh run list \
-       --repo colin-i/flashixy \
-       --workflow daily.yml \
-       --status success \
-       --limit 1 \
-       --json databaseId \
-       --jq '.[0].databaseId')
+
+      # Query API directly for runs created in last 2 days
+      CUTOFF_DATE=$(date -u -d '2 days ago' +%Y-%m-%dT%H:%M:%SZ)
+      RUN_ID=$(gh api repos/colin-i/flashixy/actions/runs \
+       --jq ".workflow_runs[] | select(.status==\"completed\" and .conclusion==\"success\" and .name==\"Daily Job\" and .created_at > \"$CUTOFF_DATE\") | .id" \
+      | head -1)
+
+      #1 from 100 times got random results with this
+      #RUN_ID=$(gh run list --repo colin-i/flashixy --workflow daily.yml --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+
       echo "Latest run: $RUN_ID"
+
       # download artifact named plays.txt
       gh run download "$RUN_ID" \
        --repo colin-i/flashixy \
